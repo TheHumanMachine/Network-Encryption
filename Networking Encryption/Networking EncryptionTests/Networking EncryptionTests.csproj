@@ -59,6 +59,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="EncryptionTestFiles\DecryptedPdfOne.pdf" />
+    <None Include="EncryptionTestFiles\DecryptedPdfTwo.pdf" />
+    <None Include="EncryptionTestFiles\EncryptedPdfOne.pdf" />
+    <None Include="EncryptionTestFiles\EncryptedPdfTwo.pdf" />
+    <None Include="EncryptionTestFiles\PdFToEncryptOne.pdf" />
+    <None Include="EncryptionTestFiles\PdFToEncryptTwo.pdf" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,32 @@
       <Project>{16D0ABDC-EB57-4196-9B1C-248DDECE8C42}</Project>
       <Name>Networking Encryption</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="EncryptionTestFiles\DecryptedGifOne.gif" />
+    <Content Include="EncryptionTestFiles\DecryptedGifTwo.gif" />
+    <Content Include="EncryptionTestFiles\DecryptedJpegOne.jpg" />
+    <Content Include="EncryptionTestFiles\DecryptedJpegTwo.jpg" />
+    <Content Include="EncryptionTestFiles\DecryptedPngOne.png" />
+    <Content Include="EncryptionTestFiles\DecryptedPngTwo.png" />
+    <Content Include="EncryptionTestFiles\DecryptedTextOne.txt" />
+    <Content Include="EncryptionTestFiles\DecryptedTextTwo.txt" />
+    <Content Include="EncryptionTestFiles\EncryptedGifOne.gif" />
+    <Content Include="EncryptionTestFiles\EncryptedGifTwo.gif" />
+    <Content Include="EncryptionTestFiles\EncryptedJpegOne.jpg" />
+    <Content Include="EncryptionTestFiles\EncryptedJpegTwo.jpg" />
+    <Content Include="EncryptionTestFiles\EncryptedPngOne.png" />
+    <Content Include="EncryptionTestFiles\EncryptedPngTwo.png" />
+    <Content Include="EncryptionTestFiles\EncryptedTextOne.txt" />
+    <Content Include="EncryptionTestFiles\EncryptedTextTwo.txt" />
+    <Content Include="EncryptionTestFiles\GifToEncryptOne.gif" />
+    <Content Include="EncryptionTestFiles\GifToEncryptTwo.gif" />
+    <Content Include="EncryptionTestFiles\JpegToEncryptOne.jpg" />
+    <Content Include="EncryptionTestFiles\JpegToEncryptTwo.jpg" />
+    <Content Include="EncryptionTestFiles\PngImageToEncryptOne.png" />
+    <Content Include="EncryptionTestFiles\PngImageToEncryptTwo.png" />
+    <Content Include="EncryptionTestFiles\TextToEncryptOne.txt" />
+    <Content Include="EncryptionTestFiles\TextToEncryptTwo.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
