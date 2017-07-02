@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.1.0
- * Date: 6/30/17
+ * Build: 0.3.0
+ * Date: 7/2/17
  * Code Metrics:
- * Network Encryption: 72   44  1   16  84
+ * Network Encryption: 76   47  1   15  110
  */
 namespace Networking_Encryption
 {
@@ -20,14 +20,46 @@ namespace Networking_Encryption
 
         public byte[] Key
         {
-            get { return savedKey; }
+            get
+            {
+                //var temp = savedKey;
+                //savedKey = null;
+                return savedKey;
+            }
             set { savedKey = value; }
         }
 
         public byte[] IV
         {
-            get { return savedIV; }
+            get
+            {
+                //byte[] temp = savedIV;
+                //savedIV = null;
+                return savedIV;
+            }
             set { savedIV = value; }
+        }
+        /// <summary>
+        /// function parses the given byte[] into a valid string for the class user
+        /// </summary>
+        /// <param name="array">array to convert to String</param>
+        /// <returns></returns>
+        private string makeStr(byte[] array)
+        {
+            string retVal = "";
+            string temp = "";
+            int mod = 0;
+            for (int index = 0; index < array.Length; index++)
+            {
+                temp = array[index].ToString();
+                mod = temp.Length % 3;
+                if (mod > 0)
+                {
+                    retVal += mod == 1 ? "00" : "0";// account for digit sig ex: 001 etc
+                }
+                retVal += temp;
+            }
+            return retVal;
         }
         /// <summary>
         /// function compares the file extentions of two files
@@ -140,8 +172,13 @@ namespace Networking_Encryption
                 }
             }
             //convert encrypted string
-            string encyptedStr = Convert.ToBase64String(orginalBytes);
-            return encyptedStr;
+
+            string encryptedStr = "";
+            encryptedStr += makeStr(savedIV);
+            encryptedStr += makeStr(savedKey);
+            encryptedStr += Convert.ToBase64String(orginalBytes);
+            savedKey = savedIV = null;
+            return encryptedStr;
         }
         /// <summary>
         /// function encrypts the given  obj
@@ -157,6 +194,7 @@ namespace Networking_Encryption
             {
                 temp = StringEncrypt(obj);
             }
+
             return temp;
         }
         public void Encrypt(string readLocation, string SaveLocation, string seed = "")
