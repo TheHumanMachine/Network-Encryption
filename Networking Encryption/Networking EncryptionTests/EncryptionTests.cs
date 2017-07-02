@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 /*Build:1.0.0
  * Date: 6/30/17
- * Code Metrics: 61    28   1   5   268
+ * Code Metrics: 62 28  1   5   268
  */ 
 namespace Networking_Encryption.Tests
 {

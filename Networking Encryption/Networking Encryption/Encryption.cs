@@ -9,12 +9,26 @@ using System.IO;
  * Build: 0.1.0
  * Date: 6/30/17
  * Code Metrics:
- * Network Encryption: 90  16   1   3   24
+ * Network Encryption: 72   44  1   16  84
  */
 namespace Networking_Encryption
 {
     public class Encryption
     {
+        private static byte[] savedKey = null;
+        private static byte[] savedIV = null;
+
+        public byte[] Key
+        {
+            get { return savedKey; }
+            set { savedKey = value; }
+        }
+
+        public byte[] IV
+        {
+            get { return savedIV; }
+            set { savedIV = value; }
+        }
         /// <summary>
         /// function compares the file extentions of two files
         /// <para/>returns true if they hold the same extention 
@@ -48,7 +62,7 @@ namespace Networking_Encryption
             while (token != '.' && index > 0)
             {
                 token = file[index];
-                extention = extention.Insert(0,token.ToString());
+                extention = extention.Insert(0, token.ToString());
                 index--;
             }
             if (!extention.Contains('.'))
@@ -57,17 +71,142 @@ namespace Networking_Encryption
             }
             return extention;
         }
-        public string Encrypt(string temp,string seed = "")
+        /// <summary>
+        /// function checks given string has a valid file extention
+        /// <para/>returns true if string has an extention
+        /// </summary>
+        /// <param name="FileName"> string to check</param>
+        /// <returns>returns a bool whether or not file has an extention</returns>
+        private bool checkHasExtention(string FileName)
         {
-            throw new NotImplementedException();
+            bool hasExtention = true;
+            try
+            {
+                getExtention(FileName);
+            }
+            catch (Exception)
+            {
+                hasExtention = false;
+            }
+            return hasExtention;
+        }
+        //begin stringEncryption
+        private static void RdGenerateSecretKey(RijndaelManaged rdProvider)
+        {
+            if (savedKey == null)
+            {
+                rdProvider.KeySize = 256;
+                rdProvider.GenerateKey();
+                savedKey = rdProvider.Key;
+            }
+        }
+        private static void RdGenerateInitVector(RijndaelManaged rdProvider)
+        {
+            if (savedIV == null)
+            {
+                rdProvider.GenerateKey();
+                savedIV = rdProvider.IV;
+            }
+        }
+        private string StringEncrypt(string orignalString)
+        {
+            // encode data
+            byte[] orginalStringAsBytes = Encoding.ASCII.GetBytes(orignalString);
+            byte[] orginalBytes = { };
+
+            //create memstream
+            using (MemoryStream memStream = new MemoryStream(orginalStringAsBytes.Length))
+            {
+                using (RijndaelManaged rijndael = new RijndaelManaged())
+                {
+                    RdGenerateSecretKey(rijndael);
+                    RdGenerateInitVector(rijndael);
+
+                    if (savedIV == null || savedKey == null)
+                    {
+                        throw new NullReferenceException(" one of keys is null");
+                    }
+                    //create encryptor & streams
+                    using (ICryptoTransform rdTransform = rijndael.CreateEncryptor((byte[])savedKey.Clone(), (byte[])savedIV.Clone()))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(memStream, rdTransform, CryptoStreamMode.Write))
+                        {
+                            // write encrypted Data
+                            cryptoStream.Write(orginalStringAsBytes, 0, orginalStringAsBytes.Length);
+                            cryptoStream.FlushFinalBlock();
+                            orginalBytes = memStream.ToArray();
+                        }
+                    }
+                }
+            }
+            //convert encrypted string
+            string encyptedStr = Convert.ToBase64String(orginalBytes);
+            return encyptedStr;
+        }
+        /// <summary>
+        /// function encrypts the given  obj
+        /// <para/> function returns an encrypted string or a  the name of the file where the file was encrypted
+        /// </summary>
+        /// <param name="obj"> obj to encrypt</param>
+        /// <param name="seed">the specified seed to run the encryption on</param>
+        /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
+        public string Encrypt(string obj,string seed = "")
+        {
+            string temp = "";
+            if (!checkHasExtention(obj))
+            {
+                temp = StringEncrypt(obj);
+            }
+            return temp;
         }
         public void Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
             throw new NotImplementedException();
         }
-        public string Decrypt(string temp)
+        /// <summary>
+        /// function decrypts the given obj
+        /// <para/> returns a decrypted string or the name of the decrypted file
+        /// </summary>
+        /// <param name="obj"> the obj to decrypt</param>
+        /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
+        public string Decrypt(string obj)
         {
-            throw new NotImplementedException();
+            string decryptedObj = "";
+            if (!checkHasExtention(obj))
+            {
+                string key = "";
+                string seed = "";
+                decryptedObj = decryptString(obj,key,seed);
+            }
+            return decryptedObj;
+        }
+        public string decryptString(string temp, string key, string seed)
+        {
+            // convert encrypted string
+            byte[] encrypStrAsBytes = Convert.FromBase64String(temp);
+            byte[] intialText = new Byte[encrypStrAsBytes.Length];
+            using (RijndaelManaged rijndael = new RijndaelManaged())
+            {
+                using (MemoryStream memstream = new MemoryStream(encrypStrAsBytes))
+                {
+                    if (savedIV == null || savedKey == null)
+                    {
+                        throw new NullReferenceException("saved key or iv are  is set to null");
+                    }
+                    //create decryptor & stream obj
+                    using (ICryptoTransform rdTransform = rijndael.CreateDecryptor((byte[])savedKey.Clone(), (byte[])savedIV.Clone()))
+                    {
+                        using (CryptoStream cryptostream = new CryptoStream(memstream,rdTransform,CryptoStreamMode.Read))
+                        {
+                            // read encryption
+                            cryptostream.Read(intialText, 0, intialText.Length);
+                        }
+                    }
+                }
+            }
+            // convet to str
+            string decryptedStr = Encoding.ASCII.GetString(intialText);
+            return decryptedStr;
         }
         public void Decrypt(string readLocation,string saveLocation)
         {
