@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.4.1
+ * Build: 0.4.3
  * Date: 7/2/17
  * Code Metrics:
  * Network Encryption: 78   59  1   14  138
@@ -38,9 +38,20 @@ namespace Networking_Encryption
         /// <returns></returns>
         private string makeStr(byte[] array)
         {
-            char[] t = new char[Encoding.ASCII.GetCharCount(array, 0, array.Length)];
-            Encoding.ASCII.GetChars(array, 0, array.Length, t, 0);
-            return new string(t);
+            string retVal = "";
+            string temp = "";
+            int mod = 0;
+            for (int index = 0; index < array.Length; index++)
+            {
+                temp = array[index].ToString();
+                mod = temp.Length % 3;
+                if (mod > 0)
+                {
+                    retVal += mod == 1 ? "00" : "0";
+                }
+                retVal += temp;
+            }
+            return retVal;
         }
         /// <summary>
         /// function compares the file extentions of two files
@@ -141,7 +152,30 @@ namespace Networking_Encryption
             {
                 rdSeed = seed;
             }
+            checkKeyAndSeed();
         }
+        /// <summary>
+        /// function checks that the generated key and seed are within valid bounds of ascii
+        /// </summary>
+        private static void checkKeyAndSeed()
+        {
+            const int MaxAscii = 127; // last valid number for ascii table
+            for (int index = 0; index < rdKey.Length; index++)
+            {
+                if (rdKey[index] > MaxAscii)
+                {
+                    rdKey[index] /= 2;
+                }
+            }
+            for (int index = 0; index < rdSeed.Length; index++)
+            {
+                if (rdSeed[index] > MaxAscii)
+                {
+                    rdSeed[index] /= 2;
+                }
+            }
+        }
+
         /// <summary>
         /// function intializes the seed to run the encryption algo
         /// </summary>
@@ -179,7 +213,8 @@ namespace Networking_Encryption
             }
             while (index < 48 ) // make ownKey
             {
-                byte temp = 255;
+                const byte lastAsciiVal = 127;
+                byte temp = lastAsciiVal;
                 if (index < 32) // the size req for a valid key
                 {
                     key[index] = temp;
@@ -188,7 +223,7 @@ namespace Networking_Encryption
                 {
                     seed[index - 32] = temp;
                 }
-                temp--;
+                temp = temp > 0 ? temp-- : lastAsciiVal;
                 index++;
             }
             return textAsBytes.Length >= 48 ? text.Substring(48,text.Length - index) : "";
@@ -281,15 +316,35 @@ namespace Networking_Encryption
             string decryptedObj = "";
             if (!checkHasExtention(obj))
             {
-                byte[] key = new byte[32];
-                byte[] seed = new byte[16];
-                obj = makeKeyAndSeed(obj, ref key, ref seed);
-                rdKey = key;
-                rdSeed = seed;
+                obj = parseStrKeyAndSeed(obj);
                 decryptedObj = decryptString(obj);
             }
             return decryptedObj;
         }
+
+        private string parseStrKeyAndSeed(string obj)
+        {
+            byte[] key = new byte[32];
+            byte[] seed = new byte[16];
+            int stringIndex = 0;
+            int arrayIndex = 0;
+            while (arrayIndex < 48)
+            {
+                if (arrayIndex < 32)
+                {
+                    key[arrayIndex] = Convert.ToByte(obj.Substring(stringIndex, 3));
+                }
+                else
+                {
+                    seed[arrayIndex - 32] = Convert.ToByte(obj.Substring(stringIndex, 3)); 
+                }
+                stringIndex += 3;
+            }
+            rdKey = key;
+            rdSeed = seed;
+            return obj.Substring(stringIndex,obj.Length - stringIndex);
+        }
+
         /// <summary>
         /// function takes an encrypted string and Decrypts it
         /// </summary>
