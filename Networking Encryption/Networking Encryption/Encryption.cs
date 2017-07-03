@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.4.0
+ * Build: 0.4.1
  * Date: 7/2/17
  * Code Metrics:
  * Network Encryption: 78   59  1   14  138
@@ -38,20 +38,9 @@ namespace Networking_Encryption
         /// <returns></returns>
         private string makeStr(byte[] array)
         {
-            string retVal = "";
-            string temp = "";
-            int mod = 0;
-            for (int index = 0; index < array.Length; index++)
-            {
-                temp = array[index].ToString();
-                mod = temp.Length % 3;
-                if (mod > 0)
-                {
-                    retVal += mod == 1 ? "00" : "0";// account for digit sig ex: 001 etc
-                }
-                retVal += temp;
-            }
-            return retVal;
+            char[] t = new char[Encoding.ASCII.GetCharCount(array, 0, array.Length)];
+            Encoding.ASCII.GetChars(array, 0, array.Length, t, 0);
+            return new string(t);
         }
         /// <summary>
         /// function compares the file extentions of two files
@@ -172,7 +161,7 @@ namespace Networking_Encryption
         /// <param name="key">key to be used for encryption algo</param>
         /// <param name="seed">seed to be used within the encryption algo</param>
         /// <returns>a substring of the left over text</returns>
-        private static string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
+        private string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
         {
             byte[] textAsBytes = Encoding.ASCII.GetBytes(text);
             int index = 0;
@@ -209,7 +198,7 @@ namespace Networking_Encryption
         {
             // encode data
             byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
-            byte[] orginalBytes = { };
+            byte[] encryptedBytes = { };
 
             //create memstream
             using (MemoryStream memStrm = new MemoryStream(strAsBytes.Length))
@@ -239,7 +228,7 @@ namespace Networking_Encryption
                             // write encrypted Data
                             cryptoStrm.Write(strAsBytes, 0, strAsBytes.Length);
                             cryptoStrm.FlushFinalBlock();
-                            orginalBytes = memStrm.ToArray();
+                            encryptedBytes = memStrm.ToArray();
                         }
                     }
                 }
@@ -247,9 +236,9 @@ namespace Networking_Encryption
             //convert encrypted string
 
             string encryptedStr = "";
-            encryptedStr += makeStr(rdSeed);
             encryptedStr += makeStr(rdKey);
-            encryptedStr += Convert.ToBase64String(orginalBytes);
+            encryptedStr += makeStr(rdSeed);
+            encryptedStr += Convert.ToBase64String(encryptedBytes);
             rdKey = rdSeed = null;
             return encryptedStr;
         }
@@ -292,39 +281,46 @@ namespace Networking_Encryption
             string decryptedObj = "";
             if (!checkHasExtention(obj))
             {
-                string key = "";
-                string seed = "";
-                decryptedObj = decryptString(obj,key,seed);
+                byte[] key = new byte[32];
+                byte[] seed = new byte[16];
+                obj = makeKeyAndSeed(obj, ref key, ref seed);
+                rdKey = key;
+                rdSeed = seed;
+                decryptedObj = decryptString(obj);
             }
             return decryptedObj;
         }
-        public string decryptString(string temp, string key, string seed)
+        /// <summary>
+        /// function takes an encrypted string and Decrypts it
+        /// </summary>
+        /// <param name="encryptedStr">string to decrypt</param>
+        /// <returns>returns a decrypted string</returns>
+        public string decryptString(string encryptedStr)
         {
             // convert encrypted string
-            byte[] encrypStrAsBytes = Convert.FromBase64String(temp);
-            byte[] intialText = new Byte[encrypStrAsBytes.Length];
+            byte[] encrypStrAsBytes = Convert.FromBase64String(encryptedStr);
+            byte[] orginalText = new Byte[encrypStrAsBytes.Length];
             using (RijndaelManaged rijndael = new RijndaelManaged())
             {
-                using (MemoryStream memstream = new MemoryStream(encrypStrAsBytes))
+                using (MemoryStream memStrm = new MemoryStream(encrypStrAsBytes))
                 {
                     if (rdSeed == null || rdKey == null)
                     {
                         throw new NullReferenceException("saved key or iv are  is set to null");
                     }
                     //create decryptor & stream obj
-                    using (ICryptoTransform rdTransform = rijndael.CreateDecryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
+                    using (ICryptoTransform rdTransfrm = rijndael.CreateDecryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
                     {
-                        using (CryptoStream cryptostream = new CryptoStream(memstream,rdTransform,CryptoStreamMode.Read))
+                        using (CryptoStream cryptostrm = new CryptoStream(memStrm,rdTransfrm,CryptoStreamMode.Read))
                         {
                             // read encryption
-                            cryptostream.Read(intialText, 0, intialText.Length);
+                            cryptostrm.Read(orginalText, 0, orginalText.Length);
                         }
                     }
                 }
             }
-            // convet to str
-            string decryptedStr = Encoding.ASCII.GetString(intialText);
-            return decryptedStr;
+            rdKey = rdSeed = null;
+            return Encoding.ASCII.GetString(orginalText);
         }
         public void Decrypt(string readLocation,string saveLocation)
         {
