@@ -186,6 +186,7 @@ namespace Networking_Encryption
                 {
                     seed[index - 32] = textAsBytes[index];
                 }
+                index++;
             }
             while (index < 48 ) // make ownKey
             {
@@ -199,6 +200,7 @@ namespace Networking_Encryption
                     seed[index - 32] = temp;
                 }
                 temp--;
+                index++;
             }
             return textAsBytes.Length >= 48 ? text.Substring(48,text.Length - index) : "";
         }
@@ -216,8 +218,8 @@ namespace Networking_Encryption
                 {
                     if (seed != "")
                     {
-                        byte[] key = null;
-                        byte[] algoSeed = null;
+                        byte[] key = new byte[32];
+                        byte[] algoSeed = new byte[16];
                         makeKeyAndSeed(seed, ref key, ref algoSeed);
                         rdGenerateKeys(rijndael, key, algoSeed);
                     }
