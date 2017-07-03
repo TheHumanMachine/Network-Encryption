@@ -6,38 +6,30 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.3.0
+ * Build: 0.4.0
  * Date: 7/2/17
  * Code Metrics:
- * Network Encryption: 76   47  1   15  110
+ * Network Encryption: 78   59  1   14  138
  */
 namespace Networking_Encryption
 {
     public class Encryption
     {
-        private static byte[] savedKey = null;
-        private static byte[] savedIV = null;
+        private static byte[] rdKey = null;
+        private static byte[] rdSeed = null;
 
         public byte[] Key
         {
             get
-            {
-                //var temp = savedKey;
-                //savedKey = null;
-                return savedKey;
-            }
-            set { savedKey = value; }
+            { return rdKey; }
+            set { rdKey = value; }
         }
 
         public byte[] IV
         {
             get
-            {
-                //byte[] temp = savedIV;
-                //savedIV = null;
-                return savedIV;
-            }
-            set { savedIV = value; }
+            { return rdSeed; }
+            set { rdSeed = value; }
         }
         /// <summary>
         /// function parses the given byte[] into a valid string for the class user
@@ -123,50 +115,129 @@ namespace Networking_Encryption
             return hasExtention;
         }
         //begin stringEncryption
-        private static void RdGenerateSecretKey(RijndaelManaged rdProvider)
+        /// <summary>
+        /// generates a random key to be used for the encryption algo
+        /// </summary>
+        /// <param name="provider"> class to intialize the key</param>
+        private static void rdGenerateKey(RijndaelManaged provider)
         {
-            if (savedKey == null)
+            if (rdKey == null)
             {
-                rdProvider.KeySize = 256;
-                rdProvider.GenerateKey();
-                savedKey = rdProvider.Key;
+                provider.KeySize = 256;
+                provider.GenerateKey();
+                rdKey = provider.Key;
             }
         }
-        private static void RdGenerateInitVector(RijndaelManaged rdProvider)
+        /// <summary>
+        /// function intializes key and seed compents for the string encryption
+        /// </summary>
+        /// <param name="provider"> stream to intialize the key & seed compenents</param>
+        /// <param name="key">the key to set if given one</param>
+        /// <param name="seed">the seed to intialize of off if given</param>
+        private static void rdGenerateKeys(RijndaelManaged provider,byte[] key = null,byte[] seed = null)
         {
-            if (savedIV == null)
+            if (key == null)
             {
-                rdProvider.GenerateKey();
-                savedIV = rdProvider.IV;
+                rdGenerateKey(provider);
+            }
+            else
+            {
+                rdKey = key;
+            }
+            if (seed == null)
+            {
+                rdGenerateSeed(provider);
+            }
+            else
+            {
+                rdSeed = seed;
             }
         }
-        private string StringEncrypt(string orignalString)
+        /// <summary>
+        /// function intializes the seed to run the encryption algo
+        /// </summary>
+        /// <param name="provider">class to generate the seed</param>
+        private static void rdGenerateSeed(RijndaelManaged provider)
+        {
+            if (rdSeed == null)
+            {
+                provider.GenerateKey();
+                rdSeed = provider.IV;
+            }
+        }
+        /// <summary>
+        /// function parses  the key & seed to be used within string encrytion
+        /// </summary>
+        /// <param name="text"> given text to parse from</param>
+        /// <param name="key">key to be used for encryption algo</param>
+        /// <param name="seed">seed to be used within the encryption algo</param>
+        /// <returns>a substring of the left over text</returns>
+        private static string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
+        {
+            byte[] textAsBytes = Encoding.ASCII.GetBytes(text);
+            int index = 0;
+            while (index < 48 && index < textAsBytes.Length)
+            {
+                if (index < 32) // the size req for a valid key
+                {
+                    key[index] = textAsBytes[index];
+                }
+                else // index >= 32
+                {
+                    seed[index - 32] = textAsBytes[index];
+                }
+            }
+            while (index < 48 ) // make ownKey
+            {
+                byte temp = 255;
+                if (index < 32) // the size req for a valid key
+                {
+                    key[index] = temp;
+                }
+                else // index >= 32
+                {
+                    seed[index - 32] = temp;
+                }
+                temp--;
+            }
+            return textAsBytes.Length >= 48 ? text.Substring(48,text.Length - index) : "";
+        }
+
+        private string StringEncrypt(string strToEncrypt,string seed = "")
         {
             // encode data
-            byte[] orginalStringAsBytes = Encoding.ASCII.GetBytes(orignalString);
+            byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
             byte[] orginalBytes = { };
 
             //create memstream
-            using (MemoryStream memStream = new MemoryStream(orginalStringAsBytes.Length))
+            using (MemoryStream memStrm = new MemoryStream(strAsBytes.Length))
             {
                 using (RijndaelManaged rijndael = new RijndaelManaged())
                 {
-                    RdGenerateSecretKey(rijndael);
-                    RdGenerateInitVector(rijndael);
-
-                    if (savedIV == null || savedKey == null)
+                    if (seed != "")
+                    {
+                        byte[] key = null;
+                        byte[] algoSeed = null;
+                        makeKeyAndSeed(seed, ref key, ref algoSeed);
+                        rdGenerateKeys(rijndael, key, algoSeed);
+                    }
+                    else
+                    {
+                        rdGenerateKeys(rijndael);
+                    }
+                    if (rdSeed == null || rdKey == null)
                     {
                         throw new NullReferenceException(" one of keys is null");
                     }
                     //create encryptor & streams
-                    using (ICryptoTransform rdTransform = rijndael.CreateEncryptor((byte[])savedKey.Clone(), (byte[])savedIV.Clone()))
+                    using (ICryptoTransform rdTransfrm = rijndael.CreateEncryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
                     {
-                        using (CryptoStream cryptoStream = new CryptoStream(memStream, rdTransform, CryptoStreamMode.Write))
+                        using (CryptoStream cryptoStrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Write))
                         {
                             // write encrypted Data
-                            cryptoStream.Write(orginalStringAsBytes, 0, orginalStringAsBytes.Length);
-                            cryptoStream.FlushFinalBlock();
-                            orginalBytes = memStream.ToArray();
+                            cryptoStrm.Write(strAsBytes, 0, strAsBytes.Length);
+                            cryptoStrm.FlushFinalBlock();
+                            orginalBytes = memStrm.ToArray();
                         }
                     }
                 }
@@ -174,10 +245,10 @@ namespace Networking_Encryption
             //convert encrypted string
 
             string encryptedStr = "";
-            encryptedStr += makeStr(savedIV);
-            encryptedStr += makeStr(savedKey);
+            encryptedStr += makeStr(rdSeed);
+            encryptedStr += makeStr(rdKey);
             encryptedStr += Convert.ToBase64String(orginalBytes);
-            savedKey = savedIV = null;
+            rdKey = rdSeed = null;
             return encryptedStr;
         }
         /// <summary>
@@ -192,7 +263,14 @@ namespace Networking_Encryption
             string temp = "";
             if (!checkHasExtention(obj))
             {
-                temp = StringEncrypt(obj);
+                if (seed == "")
+                {
+                    temp = StringEncrypt(obj);
+                }
+                else
+                {
+                    temp = StringEncrypt(obj,seed);
+                }
             }
 
             return temp;
@@ -227,12 +305,12 @@ namespace Networking_Encryption
             {
                 using (MemoryStream memstream = new MemoryStream(encrypStrAsBytes))
                 {
-                    if (savedIV == null || savedKey == null)
+                    if (rdSeed == null || rdKey == null)
                     {
                         throw new NullReferenceException("saved key or iv are  is set to null");
                     }
                     //create decryptor & stream obj
-                    using (ICryptoTransform rdTransform = rijndael.CreateDecryptor((byte[])savedKey.Clone(), (byte[])savedIV.Clone()))
+                    using (ICryptoTransform rdTransform = rijndael.CreateDecryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
                     {
                         using (CryptoStream cryptostream = new CryptoStream(memstream,rdTransform,CryptoStreamMode.Read))
                         {
