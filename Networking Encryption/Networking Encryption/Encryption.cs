@@ -71,6 +71,7 @@ namespace Networking_Encryption
         {
             int index = file.Count() - 1;
             string extention = "";
+            jfdkfljdlkdfs
             char token = ' ';
             while (token != '.' && index > 0)
             {
