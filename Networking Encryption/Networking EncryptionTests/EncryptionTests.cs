@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/*Build:1.0.0
+/*Build:1.0.1
  * Date: 6/30/17
  * Code Metrics: 61 28  1   5   268
  */ 
@@ -50,7 +50,7 @@ namespace Networking_Encryption.Tests
         public void EncryptStringSameSeedTest()
         {
             string word = "this is a test";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor1 = new Encryption();
             Encryption encryptor2 = new Encryption();
             string cipherText = encryptor1.Encrypt(word,seed);
@@ -74,7 +74,7 @@ namespace Networking_Encryption.Tests
             string saveDestination1 = @"EncryptedTextOne.txt";
             string fileToEncrypt2 = @"TextToEncryptTwo.txt";
             string saveDestination2 = @"EncryptedTextTwo.txt";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1,seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveDestination1),"test 1");
@@ -99,7 +99,7 @@ namespace Networking_Encryption.Tests
             string saveDestination1 = @"EncryptedPdfOne.pdf";
             string fileToEncrypt2 = @"PdfToEncryptTwo.pdf";
             string saveDestination2 = @"EncryptedPdfTwo.pdf";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveDestination1), "test 1");
@@ -124,7 +124,7 @@ namespace Networking_Encryption.Tests
             string saveDestination1 = @"EncryptedPngOne.png";
             string fileToEncrypt2 = @"PngImageToEncryptTwo.png";
             string saveDestination2 = @"EncryptedPngTwo.png";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveDestination1), "test 1");
@@ -149,7 +149,7 @@ namespace Networking_Encryption.Tests
             string saveDestination1 = @"EncryptedJpegOne.jpg";
             string fileToEncrypt2 = @"JpegToEncryptTwo.jpg";
             string saveDestination2 = @"EncryptedJpegTwo.jpg";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveDestination1), "test 1");
@@ -174,7 +174,7 @@ namespace Networking_Encryption.Tests
             string saveDestination1 = @"EncryptedGifOne.gif";
             string fileToEncrypt2 = @"GifToEncryptTwo.gif";
             string saveDestination2 = @"EncryptedGifTwo.gif";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveDestination1), "test 1");
@@ -197,7 +197,7 @@ namespace Networking_Encryption.Tests
         public void DecryptStringSameSeedTest()
         {
             string word = "this is a test";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor1 = new Encryption();
             Encryption encryptor2 = new Encryption();
             string cipherText = encryptor1.Encrypt(word, seed);
@@ -233,7 +233,7 @@ namespace Networking_Encryption.Tests
             string saveEncryption2 = @"EncryptedTextTwo.txt";
             string saveDecryption1 = @"DecryptedTextOne.txt";
             string saveDecryption2 = @"DecryptedTextTwo.txt";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveEncryption1), "test 1");
@@ -269,7 +269,7 @@ namespace Networking_Encryption.Tests
             string saveEncryption2 = @"EncryptedPdfTwo.pdf";
             string saveDecryption1 = @"DecryptedPdfOne.pdf";
             string saveDecryption2 = @"DecryptedPdfTwo.pdf";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveEncryption1), "test 1");
@@ -305,7 +305,7 @@ namespace Networking_Encryption.Tests
             string saveEncryption2 = @"EncryptedPngTwo.png";
             string saveDecryption1 = @"DecryptedPngOne.png";
             string saveDecryption2 = @"DecryptedPngTwo.png";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveEncryption1), "test 1");
@@ -340,7 +340,7 @@ namespace Networking_Encryption.Tests
             string saveEncryption2 = @"EncryptedJpegTwo.jpg";
             string saveDecryption1 = @"DecryptedJpegOne.jpg";
             string saveDecryption2 = @"DecryptedJpegTwo.jpg";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveEncryption1), "test 1");
@@ -375,7 +375,7 @@ namespace Networking_Encryption.Tests
             string saveEncryption2 = @"EncryptedGifTwo.gif";
             string saveDecryption1 = @"DecryptedGifOne.gif";
             string saveDecryption2 = @"DecryptedGifTwo.gif";
-            string seed = "";
+            string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt1, saveEncryption1), "test 1");
