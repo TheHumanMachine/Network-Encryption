@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 /*
- * Build: 0.4.2
- * Date: 7/2/17
+ * Build: 0.4.4
+ * Date: 7/8/17
  * Code Metrics:
- * Network Encryption:  78  56  1   14  136
+ * Network Encryption: 80   73  1   14  175
  * Unit Tests: 61   28   1   5   268
  */
 

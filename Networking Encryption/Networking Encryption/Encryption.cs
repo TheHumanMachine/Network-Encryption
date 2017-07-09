@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.4.3
- * Date: 7/2/17
+ * Build: 0.4.4
+ * Date: 7/8/17
  * Code Metrics:
- * Network Encryption: 78   59  1   14  138
+ * Network Encryption: 80   73  1   14  175
  */
+ /*
+  * note to self to to append the size fo the str to encrypt to the decrypted str
+  * and also add handling for the decryption to ret correctly parsed str;
+  */
 namespace Networking_Encryption
 {
     public class Encryption
@@ -52,6 +56,33 @@ namespace Networking_Encryption
                 retVal += temp;
             }
             return retVal;
+        }
+        /// <summary>
+        /// function parses the given int into valid str for encryption
+        /// <para/> returns the parsed num
+        /// </summary>
+        /// <param name="num"> num to parse</param>
+        /// <returns>parsed num</returns>
+        private string makeStr(int num)
+        {
+            string temp = "";
+            if (num > 9999) // last valid size to parse
+            {
+                throw new FormatException("to large to handle");
+            }
+            if (num % 4 != 0)
+            {
+                if ( num % 4 == 3 )
+                {
+                    temp = "0";
+                }
+                else
+                {
+                    temp = num % 4 == 2 ? "00" : "000"; 
+                }
+            }
+            temp += num.ToString();
+            return temp;
         }
         /// <summary>
         /// function compares the file extentions of two files
@@ -234,6 +265,7 @@ namespace Networking_Encryption
             // encode data
             byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
             byte[] encryptedBytes = { };
+            string len = makeStr(strToEncrypt.Length);
 
             //create memstream
             using (MemoryStream memStrm = new MemoryStream(strAsBytes.Length))
@@ -272,6 +304,8 @@ namespace Networking_Encryption
 
             string encryptedStr = "";
             encryptedStr += makeStr(rdKey);
+            var a = makeStr(rdKey);
+            var b = makeStr(rdSeed);
             encryptedStr += makeStr(rdSeed);
             encryptedStr += Convert.ToBase64String(encryptedBytes);
             rdKey = rdSeed = null;
@@ -339,9 +373,11 @@ namespace Networking_Encryption
                     seed[arrayIndex - 32] = Convert.ToByte(obj.Substring(stringIndex, 3)); 
                 }
                 stringIndex += 3;
+                arrayIndex++;
             }
             rdKey = key;
             rdSeed = seed;
+            var a = obj.Substring(stringIndex, obj.Length - stringIndex);
             return obj.Substring(stringIndex,obj.Length - stringIndex);
         }
 
