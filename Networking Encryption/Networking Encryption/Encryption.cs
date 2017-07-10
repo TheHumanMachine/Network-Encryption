@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.4.4
- * Date: 7/8/17
+ * Build: 0.5.0
+ * Date: 7/9/17
  * Code Metrics:
- * Network Encryption: 80   73  1   14  175
+ * Network Encryption: 78   75  1   15  189
  */
  /*
   * note to self to to append the size fo the str to encrypt to the decrypted str
@@ -19,22 +19,8 @@ namespace Networking_Encryption
 {
     public class Encryption
     {
-        private static byte[] rdKey = null;
-        private static byte[] rdSeed = null;
 
-        public byte[] Key
-        {
-            get
-            { return rdKey; }
-            set { rdKey = value; }
-        }
-
-        public byte[] IV
-        {
-            get
-            { return rdSeed; }
-            set { rdSeed = value; }
-        }
+        #region Parse Functions
         /// <summary>
         /// function parses the given byte[] into a valid string for the class user
         /// </summary>
@@ -72,18 +58,114 @@ namespace Networking_Encryption
             }
             if (num % 4 != 0)
             {
-                if ( num % 4 == 3 )
+                if (num % 4 == 3)
                 {
                     temp = "0";
                 }
                 else
                 {
-                    temp = num % 4 == 2 ? "00" : "000"; 
+                    temp = num % 4 == 2 ? "00" : "000";
                 }
             }
             temp += num.ToString();
             return temp;
         }
+        /// <summary>
+        /// functions parses the last four elements of given str
+        /// <para/> returns an int
+        /// </summary>
+        /// <param name="text">txt to  parse</param>
+        /// <returns>returns an int: len</returns>
+        private int parseStrSize(ref string text)
+        {
+            if (text.Length <= 4)
+            {
+                throw new FormatException("invalid text format");
+            }
+            string len = text.Substring(text.Length - 4, 4);
+            foreach (char num in len)
+            {
+                if (num < '0' || num > '9')
+                {
+                    throw new InvalidDataException("invalid char found");
+                }
+            }
+            text = text.Substring(0, text.Length - 4);
+            return Convert.ToInt32(len);
+        }
+        /// <summary>
+        /// function parses  the key & seed to be used within string encrytion
+        /// </summary>
+        /// <param name="text"> given text to parse from</param>
+        /// <param name="key">key to be used for encryption algo</param>
+        /// <param name="seed">seed to be used within the encryption algo</param>
+        /// <returns>a substring of the left over text</returns>
+        private string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
+        {
+            byte[] textAsBytes = Encoding.ASCII.GetBytes(text);
+            int index = 0;
+            while (index < 48 && index < textAsBytes.Length)
+            {
+                if (index < 32) // the size req for a valid key
+                {
+                    key[index] = textAsBytes[index];
+                }
+                else // index >= 32
+                {
+                    seed[index - 32] = textAsBytes[index];
+                }
+                index++;
+            }
+            while (index < 48) // make ownKey
+            {
+                const byte lastAsciiVal = 127;
+                byte temp = lastAsciiVal;
+                if (index < 32) // the size req for a valid key
+                {
+                    key[index] = temp;
+                }
+                else // index >= 32
+                {
+                    seed[index - 32] = temp;
+                }
+                temp = temp > 0 ? temp-- : lastAsciiVal;
+                index++;
+            }
+            return textAsBytes.Length >= 48 ? text.Substring(48, text.Length - index) : "";
+        }
+        /// <summary>
+        /// function Parses & sets a key & seed for Rijndael str decryption 
+        /// <para/> returns a parsed text back to the user
+        /// </summary>
+        /// <param name="text">text to parse from</param>
+        /// <returns>returns the parsed text back to the user</returns>
+        private string parseStrKeyAndSeed(string text)
+        {
+            byte[] key = new byte[32];
+            byte[] seed = new byte[16];
+            int stringIndex = 0;
+            int arrayIndex = 0;
+            while (arrayIndex < 48)
+            {
+                if (arrayIndex < 32)
+                {
+                    key[arrayIndex] = Convert.ToByte(text.Substring(stringIndex, 3));
+                }
+                else
+                {
+                    seed[arrayIndex - 32] = Convert.ToByte(text.Substring(stringIndex, 3));
+                }
+                stringIndex += 3;
+                arrayIndex++;
+            }
+            rdKey = key;
+            rdSeed = seed;
+            var a = text.Substring(stringIndex, text.Length - stringIndex);
+            return text.Substring(stringIndex, text.Length - stringIndex);
+        }
+        #endregion
+
+        #region File Extension Functions
         /// <summary>
         /// function compares the file extentions of two files
         /// <para/>returns true if they hold the same extention 
@@ -91,7 +173,7 @@ namespace Networking_Encryption
         /// <param name="fileOne"> file name one </param>
         /// <param name="fileTwo">file name two</param>
         /// <returns> returns true if the two files contain the same extention </returns>
-        private bool checkExtention(string fileOne,string fileTwo)
+        private bool checkExtention(string fileOne, string fileTwo)
         {
             bool areSame = false;
             if (fileOne.Count() >= 4 && fileTwo.Count() >= 4) // 4 is the minimal len for a valid extention
@@ -145,7 +227,17 @@ namespace Networking_Encryption
             }
             return hasExtention;
         }
-        //begin stringEncryption
+        #endregion
+
+        #region RijnDael Functions
+        /// <summary>
+        /// key for Rijndael Algo
+        /// </summary>
+        private static byte[] rdKey = null;
+        /// <summary>
+        /// seed to run Rijndael on
+        /// </summary>
+        private static byte[] rdSeed = null;
         /// <summary>
         /// generates a random key to be used for the encryption algo
         /// </summary>
@@ -165,7 +257,7 @@ namespace Networking_Encryption
         /// <param name="provider"> stream to intialize the key & seed compenents</param>
         /// <param name="key">the key to set if given one</param>
         /// <param name="seed">the seed to intialize of off if given</param>
-        private static void rdGenerateKeys(RijndaelManaged provider,byte[] key = null,byte[] seed = null)
+        private static void rdGenerateKeys(RijndaelManaged provider, byte[] key = null, byte[] seed = null)
         {
             if (key == null)
             {
@@ -206,7 +298,6 @@ namespace Networking_Encryption
                 }
             }
         }
-
         /// <summary>
         /// function intializes the seed to run the encryption algo
         /// </summary>
@@ -219,48 +310,17 @@ namespace Networking_Encryption
                 rdSeed = provider.IV;
             }
         }
-        /// <summary>
-        /// function parses  the key & seed to be used within string encrytion
-        /// </summary>
-        /// <param name="text"> given text to parse from</param>
-        /// <param name="key">key to be used for encryption algo</param>
-        /// <param name="seed">seed to be used within the encryption algo</param>
-        /// <returns>a substring of the left over text</returns>
-        private string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
-        {
-            byte[] textAsBytes = Encoding.ASCII.GetBytes(text);
-            int index = 0;
-            while (index < 48 && index < textAsBytes.Length)
-            {
-                if (index < 32) // the size req for a valid key
-                {
-                    key[index] = textAsBytes[index];
-                }
-                else // index >= 32
-                {
-                    seed[index - 32] = textAsBytes[index];
-                }
-                index++;
-            }
-            while (index < 48 ) // make ownKey
-            {
-                const byte lastAsciiVal = 127;
-                byte temp = lastAsciiVal;
-                if (index < 32) // the size req for a valid key
-                {
-                    key[index] = temp;
-                }
-                else // index >= 32
-                {
-                    seed[index - 32] = temp;
-                }
-                temp = temp > 0 ? temp-- : lastAsciiVal;
-                index++;
-            }
-            return textAsBytes.Length >= 48 ? text.Substring(48,text.Length - index) : "";
-        }
+        #endregion
 
-        private string StringEncrypt(string strToEncrypt,string seed = "")
+        #region Rijndael String Encrypt & Decrypt
+        /// <summary>
+        /// function Encrypts the given Str using the rijndael Class
+        /// <para/> returns an encrypted String
+        /// </summary>
+        /// <param name="strToEncrypt">string to encrypt</param>
+        /// <param name="seed"> seed to run Rijndael on</param>
+        /// <returns> returns an encrypted string</returns>
+        private string StringEncrypt(string strToEncrypt, string seed = "")
         {
             // encode data
             byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
@@ -300,87 +360,14 @@ namespace Networking_Encryption
                     }
                 }
             }
-            //convert encrypted string
-
             string encryptedStr = "";
-            encryptedStr += makeStr(rdKey);
-            var a = makeStr(rdKey);
-            var b = makeStr(rdSeed);
-            encryptedStr += makeStr(rdSeed);
-            encryptedStr += Convert.ToBase64String(encryptedBytes);
+            encryptedStr += makeStr(rdKey);// add key to Str
+            encryptedStr += makeStr(rdSeed); // add seed to Str
+            encryptedStr += Convert.ToBase64String(encryptedBytes); // encrypted Str
+            encryptedStr += len; // add size of org Str
             rdKey = rdSeed = null;
             return encryptedStr;
         }
-        /// <summary>
-        /// function encrypts the given  obj
-        /// <para/> function returns an encrypted string or a  the name of the file where the file was encrypted
-        /// </summary>
-        /// <param name="obj"> obj to encrypt</param>
-        /// <param name="seed">the specified seed to run the encryption on</param>
-        /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
-        public string Encrypt(string obj,string seed = "")
-        {
-            string temp = "";
-            if (!checkHasExtention(obj))
-            {
-                if (seed == "")
-                {
-                    temp = StringEncrypt(obj);
-                }
-                else
-                {
-                    temp = StringEncrypt(obj,seed);
-                }
-            }
-
-            return temp;
-        }
-        public void Encrypt(string readLocation, string SaveLocation, string seed = "")
-        {
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// function decrypts the given obj
-        /// <para/> returns a decrypted string or the name of the decrypted file
-        /// </summary>
-        /// <param name="obj"> the obj to decrypt</param>
-        /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
-        public string Decrypt(string obj)
-        {
-            string decryptedObj = "";
-            if (!checkHasExtention(obj))
-            {
-                obj = parseStrKeyAndSeed(obj);
-                decryptedObj = decryptString(obj);
-            }
-            return decryptedObj;
-        }
-
-        private string parseStrKeyAndSeed(string obj)
-        {
-            byte[] key = new byte[32];
-            byte[] seed = new byte[16];
-            int stringIndex = 0;
-            int arrayIndex = 0;
-            while (arrayIndex < 48)
-            {
-                if (arrayIndex < 32)
-                {
-                    key[arrayIndex] = Convert.ToByte(obj.Substring(stringIndex, 3));
-                }
-                else
-                {
-                    seed[arrayIndex - 32] = Convert.ToByte(obj.Substring(stringIndex, 3)); 
-                }
-                stringIndex += 3;
-                arrayIndex++;
-            }
-            rdKey = key;
-            rdSeed = seed;
-            var a = obj.Substring(stringIndex, obj.Length - stringIndex);
-            return obj.Substring(stringIndex,obj.Length - stringIndex);
-        }
-
         /// <summary>
         /// function takes an encrypted string and Decrypts it
         /// </summary>
@@ -402,7 +389,7 @@ namespace Networking_Encryption
                     //create decryptor & stream obj
                     using (ICryptoTransform rdTransfrm = rijndael.CreateDecryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
                     {
-                        using (CryptoStream cryptostrm = new CryptoStream(memStrm,rdTransfrm,CryptoStreamMode.Read))
+                        using (CryptoStream cryptostrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Read))
                         {
                             // read encryption
                             cryptostrm.Read(orginalText, 0, orginalText.Length);
@@ -413,6 +400,76 @@ namespace Networking_Encryption
             rdKey = rdSeed = null;
             return Encoding.ASCII.GetString(orginalText);
         }
+        #endregion
+
+        #region Encryption Functions
+        /// <summary>
+        /// function encrypts the given  obj
+        /// <para/> function returns an encrypted string or a  the name of the file where the file was encrypted
+        /// </summary>
+        /// <param name="obj"> obj to encrypt</param>
+        /// <param name="seed">the specified seed to run the encryption on</param>
+        /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
+        public string Encrypt(string obj, string seed = "")
+        {
+            string temp = "";
+            if (!checkHasExtention(obj))
+            {
+                if (seed == "")
+                {
+                    temp = StringEncrypt(obj);
+                }
+                else
+                {
+                    temp = StringEncrypt(obj, seed);
+                }
+            }
+            else
+            {
+                if (seed == "")
+                {
+                    Encrypt(obj, obj);
+                }
+                else
+                {
+                    Encrypt(obj, obj, seed);
+                }
+            }
+
+            return temp;
+        }
+        #endregion
+
+        #region Decrypion Functions
+        /// <summary>
+        /// function decrypts the given obj
+        /// <para/> returns a decrypted string or the name of the decrypted file
+        /// </summary>
+        /// <param name="obj"> the obj to decrypt</param>
+        /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
+        public string Decrypt(string obj)
+        {
+            string decryptedObj = "";
+            if (!checkHasExtention(obj))
+            {
+                int len = parseStrSize(ref obj);
+                obj = parseStrKeyAndSeed(obj);
+                decryptedObj = decryptString(obj);
+                decryptedObj = decryptedObj.Substring(0, len);
+            }
+            else
+            {
+                Decrypt(obj, obj);
+            }
+            return decryptedObj;
+        }
+        #endregion
+
+        public void Encrypt(string readLocation, string SaveLocation, string seed = "")
+        {
+            throw new NotImplementedException();
+        }
+
         public void Decrypt(string readLocation,string saveLocation)
         {
             throw new NotImplementedException();
