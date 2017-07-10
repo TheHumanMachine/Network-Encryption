@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.5.0
+ * Build: 0.5.1
  * Date: 7/9/17
  * Code Metrics:
  * Network Encryption: 78   75  1   15  189
@@ -476,7 +476,34 @@ namespace Networking_Encryption
         }
         public bool compareFile(string fileName,string SecondFileName)
         {
-            throw new NotImplementedException();
+            bool areEqual = false;
+            byte fOneByte = 0;
+            byte fTwoByte = 0;
+            if (checkExtention(fileName,SecondFileName))
+            {
+                using(FileStream fileOne = new FileStream(fileName,FileMode.Open))
+                {
+                    using (FileStream fileTwo = new FileStream(SecondFileName,FileMode.Open))
+                    {
+                        if (fileOne.Length == fileTwo.Length)
+                        {
+                            long pos = 0;
+                            long fileLen = fileOne.Length;
+                            while (fOneByte == fTwoByte)
+                            {
+                                fOneByte = (byte)fileOne.ReadByte();
+                                fTwoByte = (byte)fileTwo.ReadByte();
+                                pos++;
+                            }
+                            if (pos == fileLen)
+                            {
+                                areEqual = true;
+                            }
+                        }
+                    }
+                }
+            }
+            return areEqual;
         }
     }
 }
