@@ -483,7 +483,7 @@ namespace Networking_Encryption
             {
                 using(FileStream fileOne = new FileStream(fileName,FileMode.Open))
                 {
-                    using (FileStream fileTwo = new FileStream(SecondFileName,FileMode.Open))
+                    using (FileStream fileTwo = new FileStream(SecondFileName,FileMode.Open,FileAccess.Read))
                     {
                         if (fileOne.Length == fileTwo.Length)
                         {

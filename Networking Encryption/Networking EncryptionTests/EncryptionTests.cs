@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Resources;
 
-/*Build:1.0.1
- * Date: 6/30/17
+/*Build:1.0.2
+ * Date: 7/12/17
  * Code Metrics: 61 28  1   5   268
  */ 
 namespace Networking_Encryption.Tests
@@ -18,22 +20,24 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void compareFileAreEqual()
         {
-            string fileOne = @"TextToEncryptOne.txt";
-            string fileTwo = @"TextToEncryptTwo.txt";
+            string a = Networking_EncryptionTests.Properties.Resource.textToEncryptOne;
+            //string f = Path.Combine(Environment.CurrentDirectory,@"Data\","TextToEncryptOne.txt");
+            string fileOne = Path.Combine(Environment.CurrentDirectory, @"Data\", Networking_EncryptionTests.Properties.Resource.textToEncryptOne);
+            string fileTwo = Path.Combine(Environment.CurrentDirectory, @"Data\", "TextToEncryptOne.txt");
             Encryption encryptor = new Encryption();
             Assert.IsTrue(encryptor.compareFile(fileOne, fileTwo), "Test: 1");
         }
         [TestMethod()]
         public void compareFileSameFile()
         {
-            string fileOne = @"TextToEncryptOne.txt";
+            string fileOne = "~\\EncryptionTestFiles\\TextToEncryptOne.txt";
             Encryption encryptor = new Encryption();
             Assert.IsTrue(encryptor.compareFile(fileOne, fileOne), "Test: 1");
         }
         public void compareFileNotEqual()
         {
-            string fileOne = @"TextToEncryptOne.txt";
-            string fileTwo = @"DecryptedTextOne.txt";
+            string fileOne = "~\\EncryptionTestFiles\\TextToEncryptOne.txt";
+            string fileTwo = "~\\EncryptionTestFiles\\DecryptedTextOne.txt";
             Encryption encryptor = new Encryption();
             Assert.IsFalse(encryptor.compareFile(fileOne, fileTwo), "Test: 1");
         }

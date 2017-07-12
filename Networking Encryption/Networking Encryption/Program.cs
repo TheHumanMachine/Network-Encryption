@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 /*
- * Build: 0.5.0
- * Date: 7/9/17
+ * Build: 0.5.1
+ * Date: 7/12/17
  * Code Metrics:
  * Network Encryption: 78   75  1   15  189
  * Unit Tests: 61   28   1   5   268
