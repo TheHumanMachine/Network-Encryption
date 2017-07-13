@@ -9,9 +9,9 @@ using System.IO;
 using System.Resources;
 using Networking_EncryptionTests.Properties;
 
-/*Build:1.0.3
+/*Build:1.0.4
  * Date: 7/12/17
- * Code Metrics: 60 29  1   8   302
+ * Code Metrics: 59 29  1   8   302
  */ 
 namespace Networking_Encryption.Tests
 {
@@ -31,14 +31,14 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void compareFileSameFile()
         {
-            string fileOne = "~\\EncryptionTestFiles\\TextToEncryptOne.txt";
+            string fileOne = Directory.GetParent(Resource.TextToEncryptOne).FullName;
             Encryption encryptor = new Encryption();
             Assert.IsTrue(encryptor.compareFile(fileOne, fileOne), "Test: 1");
         }
         public void compareFileNotEqual()
         {
-            string fileOne = "~\\EncryptionTestFiles\\TextToEncryptOne.txt";
-            string fileTwo = "~\\EncryptionTestFiles\\DecryptedTextOne.txt";
+            string fileOne = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            string fileTwo = Directory.GetParent(Resource.DecryptedTextOne).FullName;
             Encryption encryptor = new Encryption();
             Assert.IsFalse(encryptor.compareFile(fileOne, fileTwo), "Test: 1");
         }
@@ -66,8 +66,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptTxtFileTest()
         {
-            string fileToEncrypt = @"TextToEncryptOne.txt";
-            string saveDestination = @"EncryptedTextOne.txt";
+            string fileToEncrypt = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            string saveDestination = Directory.GetParent(Resource.EncryptedTextOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -75,10 +75,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptTxtFileSameSeedTest()
         {
-            string fileToEncrypt1 = @"TextToEncryptOne.txt";
-            string saveDestination1 = @"EncryptedTextOne.txt";
-            string fileToEncrypt2 = @"TextToEncryptTwo.txt";
-            string saveDestination2 = @"EncryptedTextTwo.txt";
+            string fileToEncrypt1 = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            string saveDestination1 = Directory.GetParent(Resource.EncryptedTextOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.TextToEncryptTwo).FullName;
+            string saveDestination2 = Directory.GetParent(Resource.EncryptedTextTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1,seed);
@@ -91,8 +91,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptPdfTest()
         {
-            string fileToEncrypt = @"PdfToEncryptOne.pdf";
-            string saveDestination = @"EncryptedPdfOne.pdf";
+            string fileToEncrypt = Directory.GetParent(Resource.PdfToEncryptOne).FullName;
+            string saveDestination = Directory.GetParent(Resource.EncryptedPdfOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -100,10 +100,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptPdfSameSeedTest()
         {
-            string fileToEncrypt1 = @"PdfToEncryptOne.pdf";
-            string saveDestination1 = @"EncryptedPdfOne.pdf";
-            string fileToEncrypt2 = @"PdfToEncryptTwo.pdf";
-            string saveDestination2 = @"EncryptedPdfTwo.pdf";
+            string fileToEncrypt1 = Directory.GetParent(Resource.PdfToEncryptOne).FullName;
+            string saveDestination1 = Directory.GetParent(Resource.EncryptedPdfOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.PdfToEncryptTwo).FullName;
+            string saveDestination2 = Directory.GetParent(Resource.EncryptedPdfTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -116,8 +116,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgPngTest()
         {
-            string fileToEncrypt = @"PngImageToEncryptOne.png";
-            string saveDestination = @"EncryptedPngOne.png";
+            string fileToEncrypt = Directory.GetParent(Resource.PngToEncryptOne).FullName;
+            string saveDestination = Directory.GetParent(Resource.EncryptedPngOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -125,10 +125,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgPngSameSeedTest()
         {
-            string fileToEncrypt1 = @"PngImageToEncryptOne.png";
-            string saveDestination1 = @"EncryptedPngOne.png";
-            string fileToEncrypt2 = @"PngImageToEncryptTwo.png";
-            string saveDestination2 = @"EncryptedPngTwo.png";
+            string fileToEncrypt1 = Directory.GetParent(Resource.PngToEncryptOne).FullName;
+            string saveDestination1 = Directory.GetParent(Resource.EncryptedPngOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.PngToEncryptTwo).FullName;
+            string saveDestination2 = Directory.GetParent(Resource.EncryptedPngTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -141,8 +141,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgJpegTest()
         {
-            string fileToEncrypt = @"JpegToEncryptOne.jpg";
-            string saveDestination = @"EncryptedJpegOne.jpg";
+            string fileToEncrypt = Directory.GetParent(Resource.JpegToEncryptOne).FullName;
+            string saveDestination = Directory.GetParent(Resource.EncryptedJpegOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -150,10 +150,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgJpegSameSeedTest()
         {
-            string fileToEncrypt1 = @"JpegToEncryptOne.jpg";
-            string saveDestination1 = @"EncryptedJpegOne.jpg";
-            string fileToEncrypt2 = @"JpegToEncryptTwo.jpg";
-            string saveDestination2 = @"EncryptedJpegTwo.jpg";
+            string fileToEncrypt1 = Directory.GetParent(Resource.JpegToEncryptOne).FullName;
+            string saveDestination1 = Directory.GetParent(Resource.EncryptedJpegOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.JpegToEncryptTwo).FullName;
+            string saveDestination2 = Directory.GetParent(Resource.EncryptedJpegTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -166,8 +166,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgGifTest()
         {
-            string fileToEncrypt = @"GifToEncryptOne.gif";
-            string saveDestination = @"EncryptedGifOne.gif";
+            string fileToEncrypt = Directory.GetParent(Resource.GifToEncryptOne).FullName;
+            string saveDestination = Directory.GetParent(Resource.EncryptedGifOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -175,10 +175,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgGifSameSeedTest()
         {
-            string fileToEncrypt1 = @"GifToEncryptOne.gif";
-            string saveDestination1 = @"EncryptedGifOne.gif";
-            string fileToEncrypt2 = @"GifToEncryptTwo.gif";
-            string saveDestination2 = @"EncryptedGifTwo.gif";
+            string fileToEncrypt1 = Directory.GetParent(Resource.GifToEncryptOne).FullName;
+            string saveDestination1 = Directory.GetParent(Resource.EncryptedGifOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.GifToEncryptTwo).FullName;
+            string saveDestination2 = Directory.GetParent(Resource.EncryptedGifTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -219,9 +219,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptTxtFileTest()
         {
-            string fileToEncrypt = @"TextToEncryptOne.txt";
-            string saveEncryption = @"EncryptedTextOne.txt";
-            string saveDecryption = @"DecryptedTextOne.txt";
+            string fileToEncrypt = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            string saveEncryption = Directory.GetParent(Resource.EncryptedTextOne).FullName;
+            string saveDecryption = Directory.GetParent(Resource.DecryptedTextOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -232,12 +232,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptTxtFileSameSeedTest()
         {
-            string fileToEncrypt1 = @"TextToEncryptOne.txt";
-            string saveEncryption1 = @"EncryptedTextOne.txt";
-            string fileToEncrypt2 = @"TextToEncryptTwo.txt";
-            string saveEncryption2 = @"EncryptedTextTwo.txt";
-            string saveDecryption1 = @"DecryptedTextOne.txt";
-            string saveDecryption2 = @"DecryptedTextTwo.txt";
+            string fileToEncrypt1 = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            string saveEncryption1 = Directory.GetParent(Resource.EncryptedTextOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.TextToEncryptTwo).FullName;
+            string saveEncryption2 = Directory.GetParent(Resource.EncryptedTextTwo).FullName;
+            string saveDecryption1 = Directory.GetParent(Resource.DecryptedTextOne).FullName;
+            string saveDecryption2 = Directory.GetParent(Resource.DecryptedTextTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -255,9 +255,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptPdfTest()
         {
-            string fileToEncrypt = @"PdfToEncryptOne.pdf";
-            string saveEncryption = @"EncryptedPdfOne.pdf";
-            string savedecryption = @"DecryptedPdfOne.pdf";
+            string fileToEncrypt = Directory.GetParent(Resource.PdfToEncryptOne).FullName;
+            string saveEncryption = Directory.GetParent(Resource.EncryptedPdfOne).FullName;
+            string savedecryption = Directory.GetParent(Resource.DecryptedPdfOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption), "test 1");
@@ -268,12 +268,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptPdfSameSeedTest()
         {
-            string fileToEncrypt1 = @"PdfToEncryptOne.pdf";
-            string saveEncryption1 = @"EncryptedPdfOne.pdf";
-            string fileToEncrypt2 = @"PdfToEncryptTwo.pdf";
-            string saveEncryption2 = @"EncryptedPdfTwo.pdf";
-            string saveDecryption1 = @"DecryptedPdfOne.pdf";
-            string saveDecryption2 = @"DecryptedPdfTwo.pdf";
+            string fileToEncrypt1 = Directory.GetParent(Resource.PdfToEncryptOne).FullName;
+            string saveEncryption1 = Directory.GetParent(Resource.EncryptedPdfOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.PdfToEncryptTwo).FullName;
+            string saveEncryption2 = Directory.GetParent(Resource.EncryptedPdfTwo).FullName;
+            string saveDecryption1 = Directory.GetParent(Resource.DecryptedPdfOne).FullName;
+            string saveDecryption2 = Directory.GetParent(Resource.DecryptedPdfTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -291,9 +291,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgPngTest()
         {
-            string fileToEncrypt = @"PngImageToEncryptOne.png";
-            string saveEncryption = @"EncryptedPngOne.png";
-            string saveDecryption = @"DecryptedPngOne.png";
+            string fileToEncrypt = Directory.GetParent(Resource.PngToEncryptOne).FullName;
+            string saveEncryption = Directory.GetParent(Resource.EncryptedPngOne).FullName;;
+            string saveDecryption = Directory.GetParent(Resource.DecryptedPngOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -304,12 +304,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgPngSameSeedTest()
         {
-            string fileToEncrypt1 = @"PngImageToEncryptOne.png";
-            string saveEncryption1 = @"EncryptedPngOne.png";
-            string fileToEncrypt2 = @"PngImageToEncryptTwo.png";
-            string saveEncryption2 = @"EncryptedPngTwo.png";
-            string saveDecryption1 = @"DecryptedPngOne.png";
-            string saveDecryption2 = @"DecryptedPngTwo.png";
+            string fileToEncrypt1 = Directory.GetParent(Resource.PngToEncryptOne).FullName;
+            string saveEncryption1 = Directory.GetParent(Resource.EncryptedPngOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.PngToEncryptOne).FullName;
+            string saveEncryption2 = Directory.GetParent(Resource.EncryptedPngTwo).FullName;
+            string saveDecryption1 = Directory.GetParent(Resource.DecryptedPngOne).FullName;
+            string saveDecryption2 = Directory.GetParent(Resource.DecryptedPngTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -327,9 +327,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgJpegTest()
         {
-            string fileToEncrypt = @"JpegToEncryptOne.jpg";
-            string saveEncryption = @"EncryptedJpegOne.jpg";
-            string saveDecryption = @"DecryptedJpegOne.jpg";
+            string fileToEncrypt = Directory.GetParent(Resource.JpegToEncryptOne).FullName;
+            string saveEncryption = Directory.GetParent(Resource.EncryptedJpegOne).FullName;
+            string saveDecryption = Directory.GetParent(Resource.DecryptedJpegOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -339,12 +339,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgJpegSameSeedTest()
         {
-            string fileToEncrypt1 = @"JpegToEncryptOne.jpg";
-            string saveEncryption1 = @"EncryptedJpegOne.jpg";
-            string fileToEncrypt2 = @"JpegToEncryptTwo.jpg";
-            string saveEncryption2 = @"EncryptedJpegTwo.jpg";
-            string saveDecryption1 = @"DecryptedJpegOne.jpg";
-            string saveDecryption2 = @"DecryptedJpegTwo.jpg";
+            string fileToEncrypt1 = Directory.GetParent(Resource.JpegToEncryptOne).FullName;
+            string saveEncryption1 = Directory.GetParent(Resource.EncryptedJpegOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.JpegToEncryptTwo).FullName;
+            string saveEncryption2 = Directory.GetParent(Resource.EncryptedJpegTwo).FullName;
+            string saveDecryption1 = Directory.GetParent(Resource.DecryptedJpegOne).FullName;
+            string saveDecryption2 = Directory.GetParent(Resource.DecryptedJpegTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -362,9 +362,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgGifTest()
         {
-            string fileToEncrypt = @"GifToEncryptOne.gif";
-            string saveEncryption = @"EncryptedGifOne.gif";
-            string saveDecryption = @"DecryptedGifOne.gif";
+            string fileToEncrypt = Directory.GetParent(Resource.GifToEncryptOne).FullName;
+            string saveEncryption = Directory.GetParent(Resource.EncryptedGifOne).FullName;
+            string saveDecryption = Directory.GetParent(Resource.DecryptedGifOne).FullName;
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -374,12 +374,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgGifSameSeedTest()
         {
-            string fileToEncrypt1 = @"GifToEncryptOne.gif";
-            string saveEncryption1 = @"EncryptedGifOne.gif";
-            string fileToEncrypt2 = @"GifToEncryptTwo.gif";
-            string saveEncryption2 = @"EncryptedGifTwo.gif";
-            string saveDecryption1 = @"DecryptedGifOne.gif";
-            string saveDecryption2 = @"DecryptedGifTwo.gif";
+            string fileToEncrypt1 = Directory.GetParent(Resource.GifToEncryptOne).FullName;
+            string saveEncryption1 = Directory.GetParent(Resource.EncryptedGifOne).FullName;
+            string fileToEncrypt2 = Directory.GetParent(Resource.GifToEncryptTwo).FullName;
+            string saveEncryption2 = Directory.GetParent(Resource.EncryptedGifTwo).FullName;
+            string saveDecryption1 = Directory.GetParent(Resource.DecryptedGifOne).FullName;
+            string saveDecryption2 = Directory.GetParent(Resource.DecryptedGifTwo).FullName;
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
