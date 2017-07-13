@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.5.1
- * Date: 7/9/17
+ * Build: 0.5.2
+ * Date: 7/13/17
  * Code Metrics:
- * Network Encryption: 78   75  1   15  189
+ * Network Encryption:77    86  1   17  213
  */
  /*
   * note to self to to append the size fo the str to encrypt to the decrypted str
@@ -469,6 +469,7 @@ namespace Networking_Encryption
         {
             throw new NotImplementedException();
         }
+        //private void textFileEncrypt(str)
 
         public void Decrypt(string readLocation,string saveLocation)
         {
@@ -477,27 +478,36 @@ namespace Networking_Encryption
         public bool compareFile(string fileName,string SecondFileName)
         {
             bool areEqual = false;
-            byte fOneByte = 0;
-            byte fTwoByte = 0;
             if (checkExtention(fileName,SecondFileName))
             {
-                using(FileStream fileOne = new FileStream(fileName,FileMode.Open))
+                using(FileStream fStrmOne = new FileStream(fileName,FileMode.Open,FileAccess.Read))
                 {
-                    using (FileStream fileTwo = new FileStream(SecondFileName,FileMode.Open,FileAccess.Read))
+                    using (FileStream fStrmTwo = new FileStream(SecondFileName,FileMode.Open,FileAccess.Read))
                     {
-                        if (fileOne.Length == fileTwo.Length)
+                        using (BinaryReader binReaderOne = new BinaryReader(fStrmOne))
                         {
-                            long pos = 0;
-                            long fileLen = fileOne.Length;
-                            while (fOneByte == fTwoByte)
+                            using (BinaryReader binReaderTwo = new BinaryReader(fStrmTwo))
                             {
-                                fOneByte = (byte)fileOne.ReadByte();
-                                fTwoByte = (byte)fileTwo.ReadByte();
-                                pos++;
-                            }
-                            if (pos == fileLen)
-                            {
-                                areEqual = true;
+                                int fileLenOne = Convert.ToInt32(binReaderOne.BaseStream.Length);
+                                int fileLenTwo = Convert.ToInt32(binReaderTwo.BaseStream.Length);
+
+                                if (fileLenOne == fileLenTwo)
+                                {
+                                    int pos = 0;
+                                    byte[] fileOneBytes = binReaderOne.ReadBytes(fileLenOne);
+                                    byte[] fileTwoBytes = binReaderTwo.ReadBytes(fileLenTwo);
+                                    if (fileOneBytes.Length == fileTwoBytes.Length)
+                                    {
+                                        while (pos < fileOneBytes.Length && fileTwoBytes[pos] == fileTwoBytes[pos])
+                                        {
+                                            pos++;
+                                        }
+                                        if (pos == fileOneBytes.Length && pos == fileTwoBytes.Length)
+                                        {
+                                            areEqual = true;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

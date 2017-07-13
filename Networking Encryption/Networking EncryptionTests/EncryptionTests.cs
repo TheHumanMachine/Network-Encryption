@@ -22,7 +22,9 @@ namespace Networking_Encryption.Tests
         public void compareFileAreEqual()
         {
             string fileOne = Directory.GetParent(Resource.TextToEncryptOne).FullName;
+            fileOne += Resource.TextToEncryptOne;
             string fileTwo = Directory.GetParent(Resource.TextToEncryptTwo).FullName;
+            fileTwo += Resource.TextToEncryptTwo;
             bool a = Directory.Exists(fileOne);
             bool b = Directory.Exists(fileTwo);
             Encryption encryptor = new Encryption();
