@@ -61,20 +61,272 @@ namespace Networking_EncryptionTests.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to sdlkjfsdkljf\sdlksdfjl.txt.
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedGifOne.gif.
         /// </summary>
-        internal static string flkdfgljkdfs {
+        internal static string DecryptedGifOne {
             get {
-                return ResourceManager.GetString("flkdfgljkdfs", resourceCulture);
+                return ResourceManager.GetString("DecryptedGifOne", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EncryptionTextFiles\TextToEncryptOne.txt.
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedGifTwo.gif.
         /// </summary>
-        internal static string textToEncryptOne {
+        internal static string DecryptedGifTwo {
             get {
-                return ResourceManager.GetString("textToEncryptOne", resourceCulture);
+                return ResourceManager.GetString("DecryptedGifTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedJpegOne.jpg.
+        /// </summary>
+        internal static string DecryptedJpegOne {
+            get {
+                return ResourceManager.GetString("DecryptedJpegOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedJpegTwo.jpg.
+        /// </summary>
+        internal static string DecryptedJpegTwo {
+            get {
+                return ResourceManager.GetString("DecryptedJpegTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedPdfOne.pdf.
+        /// </summary>
+        internal static string DecryptedPdfOne {
+            get {
+                return ResourceManager.GetString("DecryptedPdfOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedPdfTwo.pdf.
+        /// </summary>
+        internal static string DecryptedPdfTwo {
+            get {
+                return ResourceManager.GetString("DecryptedPdfTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedPngOne.png.
+        /// </summary>
+        internal static string DecryptedPngOne {
+            get {
+                return ResourceManager.GetString("DecryptedPngOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedPngTwo.png.
+        /// </summary>
+        internal static string DecryptedPngTwo {
+            get {
+                return ResourceManager.GetString("DecryptedPngTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedTextOne.txt.
+        /// </summary>
+        internal static string DecryptedTextOne {
+            get {
+                return ResourceManager.GetString("DecryptedTextOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\DecryptedTextTwo.txt.
+        /// </summary>
+        internal static string DecryptedTextTwo {
+            get {
+                return ResourceManager.GetString("DecryptedTextTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedGifOne.gif.
+        /// </summary>
+        internal static string EncryptedGifOne {
+            get {
+                return ResourceManager.GetString("EncryptedGifOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedGifTwo.gif.
+        /// </summary>
+        internal static string EncryptedGifTwo {
+            get {
+                return ResourceManager.GetString("EncryptedGifTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedJpegOne.jpg.
+        /// </summary>
+        internal static string EncryptedJpegOne {
+            get {
+                return ResourceManager.GetString("EncryptedJpegOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedJpegTwo.jpg.
+        /// </summary>
+        internal static string EncryptedJpegTwo {
+            get {
+                return ResourceManager.GetString("EncryptedJpegTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedPdfOne.pdf.
+        /// </summary>
+        internal static string EncryptedPdfOne {
+            get {
+                return ResourceManager.GetString("EncryptedPdfOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedPdfTwo.pdf.
+        /// </summary>
+        internal static string EncryptedPdfTwo {
+            get {
+                return ResourceManager.GetString("EncryptedPdfTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedPngOne.png.
+        /// </summary>
+        internal static string EncryptedPngOne {
+            get {
+                return ResourceManager.GetString("EncryptedPngOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedPngTwo.png.
+        /// </summary>
+        internal static string EncryptedPngTwo {
+            get {
+                return ResourceManager.GetString("EncryptedPngTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedTextOne.txt.
+        /// </summary>
+        internal static string EncryptedTextOne {
+            get {
+                return ResourceManager.GetString("EncryptedTextOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\EncryptedTextTwo.txt.
+        /// </summary>
+        internal static string EncryptedTextTwo {
+            get {
+                return ResourceManager.GetString("EncryptedTextTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\GifToEncryptOne.gif.
+        /// </summary>
+        internal static string GifToEncryptOne {
+            get {
+                return ResourceManager.GetString("GifToEncryptOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\GifToEncryptTwo.gif.
+        /// </summary>
+        internal static string GifToEncryptTwo {
+            get {
+                return ResourceManager.GetString("GifToEncryptTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\JpegToEncryptOne.jpg.
+        /// </summary>
+        internal static string JpegToEncryptOne {
+            get {
+                return ResourceManager.GetString("JpegToEncryptOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\JpegToEncryptTwo.jpg.
+        /// </summary>
+        internal static string JpegToEncryptTwo {
+            get {
+                return ResourceManager.GetString("JpegToEncryptTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\PdfToEncryptOne.pdf.
+        /// </summary>
+        internal static string PdfToEncryptOne {
+            get {
+                return ResourceManager.GetString("PdfToEncryptOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\PdfToEncryptTwo.pdf.
+        /// </summary>
+        internal static string PdfToEncryptTwo {
+            get {
+                return ResourceManager.GetString("PdfToEncryptTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\PngImageToEncryptOne.png.
+        /// </summary>
+        internal static string PngToEncryptOne {
+            get {
+                return ResourceManager.GetString("PngToEncryptOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\PngImageToEncryptTwo.png.
+        /// </summary>
+        internal static string PngToEncryptTwo {
+            get {
+                return ResourceManager.GetString("PngToEncryptTwo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\TextToEncryptOne.txt.
+        /// </summary>
+        internal static string TextToEncryptOne {
+            get {
+                return ResourceManager.GetString("TextToEncryptOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..\\..\\EncryptionTestFiles\\TextToEncryptTwo.txt.
+        /// </summary>
+        internal static string TextToEncryptTwo {
+            get {
+                return ResourceManager.GetString("TextToEncryptTwo", resourceCulture);
             }
         }
     }

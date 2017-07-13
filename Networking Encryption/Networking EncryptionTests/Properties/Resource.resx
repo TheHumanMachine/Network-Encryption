@@ -117,10 +117,94 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="flkdfgljkdfs" xml:space="preserve">
-    <value>sdlkjfsdkljf\sdlksdfjl.txt</value>
+  <data name="DecryptedGifOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedGifOne.gif</value>
   </data>
-  <data name="textToEncryptOne" xml:space="preserve">
-    <value>EncryptionTextFiles\TextToEncryptOne.txt</value>
+  <data name="DecryptedGifTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedGifTwo.gif</value>
+  </data>
+  <data name="DecryptedJpegOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedJpegOne.jpg</value>
+  </data>
+  <data name="DecryptedJpegTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedJpegTwo.jpg</value>
+  </data>
+  <data name="DecryptedPdfOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedPdfOne.pdf</value>
+  </data>
+  <data name="DecryptedPdfTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedPdfTwo.pdf</value>
+  </data>
+  <data name="DecryptedPngOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedPngOne.png</value>
+  </data>
+  <data name="DecryptedPngTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedPngTwo.png</value>
+  </data>
+  <data name="DecryptedTextOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedTextOne.txt</value>
+  </data>
+  <data name="DecryptedTextTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\DecryptedTextTwo.txt</value>
+  </data>
+  <data name="EncryptedGifOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedGifOne.gif</value>
+  </data>
+  <data name="EncryptedGifTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedGifTwo.gif</value>
+  </data>
+  <data name="EncryptedJpegOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedJpegOne.jpg</value>
+  </data>
+  <data name="EncryptedJpegTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedJpegTwo.jpg</value>
+  </data>
+  <data name="EncryptedPdfOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedPdfOne.pdf</value>
+  </data>
+  <data name="EncryptedPdfTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedPdfTwo.pdf</value>
+  </data>
+  <data name="EncryptedPngOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedPngOne.png</value>
+  </data>
+  <data name="EncryptedPngTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedPngTwo.png</value>
+  </data>
+  <data name="EncryptedTextOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedTextOne.txt</value>
+  </data>
+  <data name="EncryptedTextTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\EncryptedTextTwo.txt</value>
+  </data>
+  <data name="GifToEncryptOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\GifToEncryptOne.gif</value>
+  </data>
+  <data name="GifToEncryptTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\GifToEncryptTwo.gif</value>
+  </data>
+  <data name="JpegToEncryptOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\JpegToEncryptOne.jpg</value>
+  </data>
+  <data name="JpegToEncryptTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\JpegToEncryptTwo.jpg</value>
+  </data>
+  <data name="PdfToEncryptOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\PdfToEncryptOne.pdf</value>
+  </data>
+  <data name="PdfToEncryptTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\PdfToEncryptTwo.pdf</value>
+  </data>
+  <data name="PngToEncryptOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\PngImageToEncryptOne.png</value>
+  </data>
+  <data name="PngToEncryptTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\PngImageToEncryptTwo.png</value>
+  </data>
+  <data name="TextToEncryptOne" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\TextToEncryptOne.txt</value>
+  </data>
+  <data name="TextToEncryptTwo" xml:space="preserve">
+    <value>..\\..\\EncryptionTestFiles\\TextToEncryptTwo.txt</value>
   </data>
 </root>
