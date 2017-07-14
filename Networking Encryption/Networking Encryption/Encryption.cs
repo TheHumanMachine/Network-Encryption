@@ -6,15 +6,11 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.5.2
+ * Build: 0.5.3
  * Date: 7/13/17
  * Code Metrics:
- * Network Encryption:77    86  1   17  213
+ * Network Encryption:77    90  1   17  222
  */
- /*
-  * note to self to to append the size fo the str to encrypt to the decrypted str
-  * and also add handling for the decryption to ret correctly parsed str;
-  */
 namespace Networking_Encryption
 {
     public class Encryption
@@ -465,12 +461,41 @@ namespace Networking_Encryption
         }
         #endregion
 
+        /// <summary>
+        /// function encrypts the given file using Des Encryptor Class
+        /// </summary>
+        /// <param name="readLocation"> file to read from</param>
+        /// <param name="SaveLocation"> file to write to</param>
+        /// <param name="seed"> seed to run encryption algo</param>
         public void Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
             throw new NotImplementedException();
         }
-        //private void textFileEncrypt(str)
-
+        private byte[] desKey;
+        private byte[] desSeed;
+        private SymmetricAlgorithm symetricAlgo;
+        private string path;
+        private void TextFileEncrypt(string data, string saveLocation)
+        {
+            byte[] encodedData = Encoding.Unicode.GetBytes(data);
+            using (FileStream fileStrm = new FileStream(saveLocation, FileMode.Create, FileAccess.Write))
+            {
+                //genKey
+                //genSeed
+                using (ICryptoTransform transform = symetricAlgo.CreateEncryptor(desKey,desSeed))
+                {
+                    using (CryptoStream cryptoStrm = new CryptoStream(fileStrm,transform,CryptoStreamMode.Write))
+                    {
+                        cryptoStrm.Write(encodedData, 0, encodedData.Length);
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// function  decrypts the given file using the DES encrytion class
+        /// </summary>
+        /// <param name="readLocation"> file to read</param>
+        /// <param name="saveLocation">file to write to</param>
         public void Decrypt(string readLocation,string saveLocation)
         {
             throw new NotImplementedException();
