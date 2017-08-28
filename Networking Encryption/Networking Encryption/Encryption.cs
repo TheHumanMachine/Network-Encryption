@@ -13,6 +13,9 @@ using System.IO;
  */
 namespace Networking_Encryption
 {
+    /// <summary>
+    /// class encrypts and decrypts given data
+    /// </summary>
     public class Encryption
     {
 
