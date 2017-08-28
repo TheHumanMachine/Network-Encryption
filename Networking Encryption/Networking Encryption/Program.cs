@@ -18,6 +18,7 @@ namespace Networking_Encryption
         static void Main(string[] args)
         {
             byte a = Convert.ToByte("006");
+            Console.WriteLine();
         }
     }
 }
