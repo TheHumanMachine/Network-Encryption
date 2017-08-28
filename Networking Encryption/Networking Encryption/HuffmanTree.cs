@@ -8,23 +8,52 @@ namespace Networking_Encryption
 {
     public class HuffmanTree
     {
-        public void encode()
+        private class BinaryNode
+        {
+            string elemt;
+            int freqnt;
+            BinaryNode left;
+            BinaryNode right;
+
+            private BinaryNode(ref string element, int frequency, BinaryNode lft = null, BinaryNode rght = null)
+            {
+                elemt = element;
+                freqnt = frequency;
+                left = lft;
+                right = rght;
+            }
+        }
+        BinaryNode root = null;
+        /// <summary>
+        /// Transform the original string into an encoded string :: Return encodedString
+        /// </summary>
+        /// <param name="inputText"> Text inputed by User </param>
+        public string Encode(string inputText)
         { 
             throw new NotImplementedException();
         }
-        public void decode()
+        /// <summary>
+        /// Convert back an encoded string into its original text :: Return decodedString
+        /// </summary>
+        /// <param name="encodedString"> Enconded String</param>
+        public void Decode(string encodedString)
         {
             throw new NotImplementedException();
         }
-        private int calcFreqnt()
+        /// <summary>
+        /// Calculate Frequency for each letter in the input string
+        /// </summary>
+        /// <returns></returns>
+        private int CalcFreqnt()
+        {
+            throw new NotImplementedException();
+
+        }
+        public void SaveToString()
         {
             throw new NotImplementedException();
         }
-        public void saveToString()
-        {
-            throw new NotImplementedException();
-        }
-        public int size()
+        public int size(int a)
         {
             throw new NotImplementedException();
         }
