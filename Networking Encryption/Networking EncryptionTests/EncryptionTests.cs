@@ -45,7 +45,7 @@ namespace Networking_Encryption.Tests
         {
             string word = "this is a test";
             Encryption encryptor = new Encryption();
-            string cipherText = encryptor.Encrypt(word);
+            string cipherText = encryptor.EncryptStr(word);
             Assert.AreNotEqual(word, cipherText, "Test: 1");
             Assert.IsTrue(cipherText.Count() > word.Count(), "Test: 2");
         }
@@ -56,10 +56,10 @@ namespace Networking_Encryption.Tests
             string seed = "1";
             Encryption encryptor1 = new Encryption();
             Encryption encryptor2 = new Encryption();
-            string cipherText = encryptor1.Encrypt(word,seed);
+            string cipherText = encryptor1.EncryptStr(word,seed);
             Assert.AreNotEqual(word, cipherText, "Test: 1");
             Assert.IsTrue(cipherText.Count() > word.Count(), "Test: 2");
-            Assert.AreEqual(cipherText, encryptor2.Encrypt(word, seed), "Test: 3");
+            Assert.AreEqual(cipherText, encryptor2.EncryptStr(word, seed), "Test: 3");
         }
         [TestMethod()]
         public void EncryptTxtFileTest()
@@ -191,7 +191,7 @@ namespace Networking_Encryption.Tests
         {
             string word = "this is a test";
             Encryption encryptor = new Encryption();
-            string cipherText = encryptor.Encrypt(word);
+            string cipherText = encryptor.EncryptStr(word);
             Assert.AreNotEqual(word, cipherText, "Test: 1");
             Assert.IsTrue(cipherText.Count() > word.Count(), "Test: 2");
             Assert.AreEqual(word, encryptor.Decrypt(cipherText), "Test: 3");
@@ -203,8 +203,8 @@ namespace Networking_Encryption.Tests
             string seed = "1";
             Encryption encryptor1 = new Encryption();
             Encryption encryptor2 = new Encryption();
-            string cipherText = encryptor1.Encrypt(word, seed);
-            string cipherText2 = encryptor2.Encrypt(word, seed);
+            string cipherText = encryptor1.EncryptStr(word, seed);
+            string cipherText2 = encryptor2.EncryptStr(word, seed);
             Assert.AreNotEqual(word, cipherText, "Test: 1");
             Assert.IsTrue(cipherText.Count() > word.Count(), "Test: 2");
             Assert.AreEqual(cipherText, cipherText2, "Test: 3");
@@ -392,39 +392,43 @@ namespace Networking_Encryption.Tests
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, saveDecryption1), "test 6");
             Assert.IsTrue(encryptor.compareFile(saveDecryption1, saveDecryption2), "test 7");
         }
+        //static String prependFile()
         [TestMethod()]
         public void testResourceLocations()
         {
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifOne).FullName) + Files.DecryptedGifOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifTwo).FullName) + Files.DecryptedGifTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegOne).FullName) + Files.DecryptedJpegOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegTwo).FullName) + Files.DecryptedJpegTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfOne).FullName) + Files.DecryptedPdfOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfTwo).FullName) + Files.DecryptedPdfTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngOne).FullName) + Files.DecryptedPngOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngTwo).FullName) + Files.DecryptedPngTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextOne).FullName) + Files.DecryptedTextOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextTwo).FullName) + Files.DecryptedTextTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifOne).FullName) + Files.EncryptedGifOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifTwo).FullName) + Files.EncryptedGifTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegOne).FullName) + Files.EncryptedJpegOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegTwo).FullName) + Files.EncryptedJpegTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfOne).FullName) + Files.EncryptedPdfOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfTwo).FullName) + Files.EncryptedPdfTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngOne).FullName) + Files.EncryptedPngOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngTwo).FullName) + Files.EncryptedPngTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextOne).FullName) + Files.EncryptedTextOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextTwo).FullName) + Files.EncryptedTextTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptOne).FullName) + Files.GifToEncryptOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptTwo).FullName) + Files.GifToEncryptTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptOne).FullName) + Files.JpegToEncryptOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptTwo).FullName) + Files.JpegToEncryptTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptOne).FullName) + Files.PdfToEncryptOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptTwo).FullName) + Files.PdfToEncryptTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptOne).FullName) + Files.PngToEncryptOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptTwo).FullName) + Files.PngToEncryptTwo));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptOne).FullName) + Files.TextToEncryptOne));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptTwo).FullName) + Files.TextToEncryptTwo));
+            //C:\Users\fran\Documents\Visual Studio 2017\Git Repository\Network Encryption\Networking Encryption\Networking EncryptionTests\EncryptionTestFiles
+            string a = Directory.GetParent(Files.DecryptedGifOne).FullName;
+            a += FileExtentionFuncts.prependFile(Files.DecryptedGifOne);
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifOne).FullName) +  FileExtentionFuncts.prependFile(Files.DecryptedGifOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedGifTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedJpegOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedJpegTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPdfOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPdfTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPngOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPngTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedTextOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedTextTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedGifOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedGifTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedJpegOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedJpegTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPdfOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPdfTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPngOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPngTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedTextOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedTextTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.GifToEncryptOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.GifToEncryptTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.JpegToEncryptOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.JpegToEncryptTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.PdfToEncryptOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.PdfToEncryptTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.PngToEncryptOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.PngToEncryptTwo)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.TextToEncryptOne)));
+            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.TextToEncryptTwo)));
         }
     }
 }
