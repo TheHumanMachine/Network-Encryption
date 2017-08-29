@@ -23,7 +23,7 @@ namespace Networking_Encryption
                 right = rght;
             }
         }
-        BinaryNode root = null;
+        private BinaryNode root = null;
         /// <summary>
         /// Transform the original string into an encoded string :: Return encodedString
         /// </summary>
@@ -53,7 +53,7 @@ namespace Networking_Encryption
         {
             throw new NotImplementedException();
         }
-        public int size(int a)
+        public int size()
         {
             throw new NotImplementedException();
         }
