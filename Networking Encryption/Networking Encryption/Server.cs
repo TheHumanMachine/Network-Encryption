@@ -33,10 +33,13 @@ namespace Networking_Encryption
         public static void StartListening()
         {
             byte[] bytes = new Byte[1024];
-
-            IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+            
+            /*Sets up the server on the local machine. Use Dns.Resolve(Dns.GetHostName()) to get the ip of the 
+             *Actual machine and not the 127.0.0.1 ipaddress  
+             */
+            IPHostEntry ipHostInfo = Dns.Resolve("localhost");
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            Console.WriteLine("IP Address: {0}", ipAddress);
+            Console.WriteLine("Server IP Address: {0}", ipAddress);
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 8008);
 
             Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -51,16 +54,28 @@ namespace Networking_Encryption
                     allDone.Reset();
 
                     Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept(new AsyncCallback(AcceptCallBack), listener);
+                    listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
                     allDone.WaitOne();
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString())
+                Console.WriteLine(e.ToString());
             }
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();
+        }
+
+        public static void AcceptCallback(IAsyncResult ar){
+
+            allDone.Set();
+
+            Socket listener = (Socket) ar.AsyncState;
+            Socket handler = listener.EndAccept(ar);
+
+            StateObject state = new StateObject();
+            state.workSocket = handler;
+            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
         }
 
         public static void ReadCallback(IAsyncResult ar)
@@ -79,7 +94,7 @@ namespace Networking_Encryption
                 content = state.sb.ToString();
                 if (content.IndexOf("<EOF>") > -1)
                 {
-                    Console.WriteLine("Read {0} bytes from socket. \n Data {1}", content.Length, content);
+                    Console.WriteLine("Read {0} bytes from socket. \nData: {1}", content.Length, content);
                     Send(handler, content);
                 }
             }
@@ -107,6 +122,8 @@ namespace Networking_Encryption
 
                 int bytesSent = handler.EndSend(ar);
                 Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+
+
 
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
