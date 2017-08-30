@@ -13,6 +13,9 @@ using System.IO;
  */
 namespace Networking_Encryption
 {
+    /// <summary>
+    /// class encrypts and decrypts given data
+    /// </summary>
     public class Encryption
     {
 
@@ -158,70 +161,6 @@ namespace Networking_Encryption
             rdSeed = seed;
             var a = text.Substring(stringIndex, text.Length - stringIndex);
             return text.Substring(stringIndex, text.Length - stringIndex);
-        }
-        #endregion
-
-        #region File Extension Functions
-        /// <summary>
-        /// function compares the file extentions of two files
-        /// <para/>returns true if they hold the same extention 
-        /// </summary>
-        /// <param name="fileOne"> file name one </param>
-        /// <param name="fileTwo">file name two</param>
-        /// <returns> returns true if the two files contain the same extention </returns>
-        private bool checkExtention(string fileOne, string fileTwo)
-        {
-            bool areSame = false;
-            if (fileOne.Count() >= 4 && fileTwo.Count() >= 4) // 4 is the minimal len for a valid extention
-            {
-                if (getExtention(fileOne) == getExtention(fileTwo))
-                {
-                    areSame = true;
-                }
-            }
-            return areSame;
-        }
-        /// <summary>
-        /// function finds the extention type of a given file name
-        /// <para/>returns a string with the extention type of the file
-        /// </summary>
-        /// <param name="file"> name of the file</param>
-        /// <returns> returns a string associated with the file extention type</returns>
-        private string getExtention(string file)
-        {
-            int index = file.Count() - 1;
-            string extention = "";
-            char token = ' ';
-            while (token != '.' && index > 0)
-            {
-                token = file[index];
-                extention = extention.Insert(0, token.ToString());
-                index--;
-            }
-            if (!extention.Contains('.'))
-            {
-                throw new FormatException("not a valid extention");
-            }
-            return extention;
-        }
-        /// <summary>
-        /// function checks given string has a valid file extention
-        /// <para/>returns true if string has an extention
-        /// </summary>
-        /// <param name="FileName"> string to check</param>
-        /// <returns>returns a bool whether or not file has an extention</returns>
-        private bool checkHasExtention(string FileName)
-        {
-            bool hasExtention = true;
-            try
-            {
-                getExtention(FileName);
-            }
-            catch (Exception)
-            {
-                hasExtention = false;
-            }
-            return hasExtention;
         }
         #endregion
 
@@ -400,39 +339,26 @@ namespace Networking_Encryption
 
         #region Encryption Functions
         /// <summary>
-        /// function encrypts the given  obj
-        /// <para/> function returns an encrypted string or a  the name of the file where the file was encrypted
+        /// function encrypts the given  str
+        /// <para/> function returns an encrypted string
         /// </summary>
-        /// <param name="obj"> obj to encrypt</param>
+        /// <param name="str"> str to encrypt</param>
         /// <param name="seed">the specified seed to run the encryption on</param>
         /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
-        public string Encrypt(string obj, string seed = "")
+        public string EncryptStr(string str, string seed = "")
         {
-            string temp = "";
-            if (!checkHasExtention(obj))
+            if (!FileExtFuncts.checkHasExtention(str))
             {
                 if (seed == "")
                 {
-                    temp = StringEncrypt(obj);
+                    str = StringEncrypt(str);
                 }
                 else
                 {
-                    temp = StringEncrypt(obj, seed);
+                    str = StringEncrypt(str, seed);
                 }
             }
-            else
-            {
-                if (seed == "")
-                {
-                    Encrypt(obj, obj);
-                }
-                else
-                {
-                    Encrypt(obj, obj, seed);
-                }
-            }
-
-            return temp;
+            return str;
         }
         #endregion
 
@@ -446,7 +372,7 @@ namespace Networking_Encryption
         public string Decrypt(string obj)
         {
             string decryptedObj = "";
-            if (!checkHasExtention(obj))
+            if (!FileExtFuncts.checkHasExtention(obj))
             {
                 int len = parseStrSize(ref obj);
                 obj = parseStrKeyAndSeed(obj);
@@ -503,7 +429,7 @@ namespace Networking_Encryption
         public bool compareFile(string fileName,string SecondFileName)
         {
             bool areEqual = false;
-            if (checkExtention(fileName,SecondFileName))
+            if (FileExtFuncts.checkExtention(fileName,SecondFileName))
             {
                 using(FileStream fStrmOne = new FileStream(fileName,FileMode.Open,FileAccess.Read))
                 {
