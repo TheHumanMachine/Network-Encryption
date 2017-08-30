@@ -347,7 +347,7 @@ namespace Networking_Encryption
         /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
         public string EncryptStr(string str, string seed = "")
         {
-            if (!FileExtentionFuncts.checkHasExtention(str))
+            if (!FileExtFuncts.checkHasExtention(str))
             {
                 if (seed == "")
                 {
@@ -372,7 +372,7 @@ namespace Networking_Encryption
         public string Decrypt(string obj)
         {
             string decryptedObj = "";
-            if (!FileExtentionFuncts.checkHasExtention(obj))
+            if (!FileExtFuncts.checkHasExtention(obj))
             {
                 int len = parseStrSize(ref obj);
                 obj = parseStrKeyAndSeed(obj);
@@ -429,7 +429,7 @@ namespace Networking_Encryption
         public bool compareFile(string fileName,string SecondFileName)
         {
             bool areEqual = false;
-            if (FileExtentionFuncts.checkExtention(fileName,SecondFileName))
+            if (FileExtFuncts.checkExtention(fileName,SecondFileName))
             {
                 using(FileStream fStrmOne = new FileStream(fileName,FileMode.Open,FileAccess.Read))
                 {

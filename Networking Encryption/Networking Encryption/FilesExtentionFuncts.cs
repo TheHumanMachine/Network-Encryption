@@ -9,7 +9,7 @@ namespace Networking_Encryption
     /// <summary>
     /// provides manipulation to file Extentions
     /// </summary>
-    public class FileExtentionFuncts
+    public class FileExtFuncts
     {
         /// <summary>
         /// function compares the file extentions of two files
@@ -99,6 +99,29 @@ namespace Networking_Encryption
                 index++;
             } while (index < File.Length && atIndex == '.' || atIndex == '\\');
             return File.Substring(index - 1);
+        }
+        /// <summary>
+        /// the function removes all paths infront of file name
+        /// <para> returns a file name</para>
+        /// </summary>
+        /// <param name="File">file to remove paths from</param>
+        /// <returns>a file name</returns>
+        public static string removePaths(string file)
+        {
+            file = prependFile(file);
+            while (file.Contains('\\'))
+            {
+                int index = 0;
+                char atIndex = new char();
+                do
+                {
+                    atIndex = file[index];
+                    index++;
+                } while (index < file.Length && atIndex != '\\');
+                index ++;
+                file = file.Substring(index - 1);
+            }
+            return file;
         }
     }
 }

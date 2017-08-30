@@ -64,8 +64,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptTxtFileTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.TextToEncryptOne).FullName + Files.TextToEncryptOne;
-            string saveDestination = Directory.GetParent(Files.EncryptedTextOne).FullName + Files.EncryptedTextOne;
+            string fileToEncrypt = Directory.GetParent(Files.TextToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptOne);
+            string saveDestination = Directory.GetParent(Files.EncryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -73,10 +73,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptTxtFileSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.TextToEncryptOne).FullName + Files.TextToEncryptOne;
-            string saveDestination1 = Directory.GetParent(Files.EncryptedTextOne).FullName + Files.EncryptedTextOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.TextToEncryptTwo).FullName + Files.TextToEncryptTwo;
-            string saveDestination2 = Directory.GetParent(Files.EncryptedTextTwo).FullName + Files.EncryptedTextTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.TextToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptOne);
+            string saveDestination1 = Directory.GetParent(Files.EncryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.TextToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptTwo);
+            string saveDestination2 = Directory.GetParent(Files.EncryptedTextTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1,seed);
@@ -89,8 +89,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptPdfTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.PdfToEncryptOne).FullName + Files.PdfToEncryptOne;
-            string saveDestination = Directory.GetParent(Files.EncryptedPdfOne).FullName + Files.EncryptedPdfOne;
+            string fileToEncrypt = Directory.GetParent(Files.PdfToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptOne);
+            string saveDestination = Directory.GetParent(Files.EncryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -98,10 +98,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptPdfSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.PdfToEncryptOne).FullName + Files.PdfToEncryptOne;
-            string saveDestination1 = Directory.GetParent(Files.EncryptedPdfOne).FullName + Files.EncryptedPdfOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.PdfToEncryptTwo).FullName + Files.PdfToEncryptTwo;
-            string saveDestination2 = Directory.GetParent(Files.EncryptedPdfTwo).FullName + Files.EncryptedPdfTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.PdfToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptOne);
+            string saveDestination1 = Directory.GetParent(Files.EncryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.PdfToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptTwo);
+            string saveDestination2 = Directory.GetParent(Files.EncryptedPdfTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -114,8 +114,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgPngTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.PngToEncryptOne).FullName + Files.PngToEncryptOne;
-            string saveDestination = Directory.GetParent(Files.EncryptedPngOne).FullName + Files.EncryptedPngOne;
+            string fileToEncrypt = Directory.GetParent(Files.PngToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptOne);
+            string saveDestination = Directory.GetParent(Files.EncryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -124,9 +124,9 @@ namespace Networking_Encryption.Tests
         public void EncryptImgPngSameSeedTest()
         {
             string fileToEncrypt1 = Directory.GetParent(Files.PngToEncryptOne).FullName + Files.PngToEncryptOne;
-            string saveDestination1 = Directory.GetParent(Files.EncryptedPngOne).FullName + Files.EncryptedPngOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.PngToEncryptTwo).FullName + Files.PngToEncryptTwo;
-            string saveDestination2 = Directory.GetParent(Files.EncryptedPngTwo).FullName + Files.EncryptedPngTwo;
+            string saveDestination1 = Directory.GetParent(Files.EncryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.PngToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptTwo);
+            string saveDestination2 = Directory.GetParent(Files.EncryptedPngTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -139,8 +139,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgJpegTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.JpegToEncryptOne).FullName + Files.JpegToEncryptOne;
-            string saveDestination = Directory.GetParent(Files.EncryptedJpegOne).FullName + Files.EncryptedJpegOne;
+            string fileToEncrypt = Directory.GetParent(Files.JpegToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptOne);
+            string saveDestination = Directory.GetParent(Files.EncryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -148,10 +148,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgJpegSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.JpegToEncryptOne).FullName + Files.JpegToEncryptOne;
-            string saveDestination1 = Directory.GetParent(Files.EncryptedJpegOne).FullName + Files.EncryptedJpegOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.JpegToEncryptTwo).FullName + Files.JpegToEncryptTwo;
-            string saveDestination2 = Directory.GetParent(Files.EncryptedJpegTwo).FullName + Files.EncryptedJpegTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.JpegToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptOne);
+            string saveDestination1 = Directory.GetParent(Files.EncryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.JpegToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptTwo);
+            string saveDestination2 = Directory.GetParent(Files.EncryptedJpegTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -164,8 +164,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgGifTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.GifToEncryptOne).FullName + Files.GifToEncryptOne;
-            string saveDestination = Directory.GetParent(Files.EncryptedGifOne).FullName + Files.EncryptedGifOne;
+            string fileToEncrypt = Directory.GetParent(Files.GifToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptOne);
+            string saveDestination = Directory.GetParent(Files.EncryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
@@ -173,10 +173,10 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void EncryptImgGifSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.GifToEncryptOne).FullName + Files.GifToEncryptOne;
-            string saveDestination1 = Directory.GetParent(Files.EncryptedGifOne).FullName + Files.EncryptedGifOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.GifToEncryptTwo).FullName + Files.GifToEncryptTwo;
-            string saveDestination2 = Directory.GetParent(Files.EncryptedGifTwo).FullName + Files.EncryptedGifTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.GifToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptOne);
+            string saveDestination1 = Directory.GetParent(Files.EncryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.GifToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptTwo);
+            string saveDestination2 = Directory.GetParent(Files.EncryptedGifTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveDestination1, seed);
@@ -217,9 +217,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptTxtFileTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.TextToEncryptOne).FullName + Files.TextToEncryptOne;
-            string saveEncryption = Directory.GetParent(Files.EncryptedTextOne).FullName + Files.EncryptedTextOne;
-            string saveDecryption = Directory.GetParent(Files.DecryptedTextOne).FullName + Files.DecryptedTextOne;
+            string fileToEncrypt = Directory.GetParent(Files.TextToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptOne);
+            string saveEncryption = Directory.GetParent(Files.EncryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextOne);
+            string saveDecryption = Directory.GetParent(Files.DecryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedTextOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -230,12 +230,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptTxtFileSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.TextToEncryptOne).FullName + Files.TextToEncryptOne;
-            string saveEncryption1 = Directory.GetParent(Files.EncryptedTextOne).FullName + Files.EncryptedTextOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.TextToEncryptTwo).FullName + Files.TextToEncryptTwo;
-            string saveEncryption2 = Directory.GetParent(Files.EncryptedTextTwo).FullName + Files.EncryptedTextTwo;
-            string saveDecryption1 = Directory.GetParent(Files.DecryptedTextOne).FullName + Files.DecryptedTextOne;
-            string saveDecryption2 = Directory.GetParent(Files.DecryptedTextTwo).FullName + Files.DecryptedTextTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.TextToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptOne);
+            string saveEncryption1 = Directory.GetParent(Files.EncryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.TextToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptTwo);
+            string saveEncryption2 = Directory.GetParent(Files.EncryptedTextTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextTwo);
+            string saveDecryption1 = Directory.GetParent(Files.DecryptedTextOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedTextOne);
+            string saveDecryption2 = Directory.GetParent(Files.DecryptedTextTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedTextTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -253,9 +253,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptPdfTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.PdfToEncryptOne).FullName + Files.PdfToEncryptOne;
-            string saveEncryption = Directory.GetParent(Files.EncryptedPdfOne).FullName + Files.EncryptedPdfOne;
-            string savedecryption = Directory.GetParent(Files.DecryptedPdfOne).FullName + Files.DecryptedPdfOne;
+            string fileToEncrypt = Directory.GetParent(Files.PdfToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptOne);
+            string saveEncryption = Directory.GetParent(Files.EncryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfOne);
+            string savedecryption = Directory.GetParent(Files.DecryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPdfOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption), "test 1");
@@ -266,12 +266,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptPdfSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.PdfToEncryptOne).FullName + Files.PdfToEncryptOne;
-            string saveEncryption1 = Directory.GetParent(Files.EncryptedPdfOne).FullName + Files.EncryptedPdfOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.PdfToEncryptTwo).FullName + Files.PdfToEncryptTwo;
-            string saveEncryption2 = Directory.GetParent(Files.EncryptedPdfTwo).FullName + Files.EncryptedPdfTwo;
-            string saveDecryption1 = Directory.GetParent(Files.DecryptedPdfOne).FullName + Files.DecryptedPdfOne;
-            string saveDecryption2 = Directory.GetParent(Files.DecryptedPdfTwo).FullName + Files.DecryptedPdfTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.PdfToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptOne);
+            string saveEncryption1 = Directory.GetParent(Files.EncryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.PdfToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptTwo);
+            string saveEncryption2 = Directory.GetParent(Files.EncryptedPdfTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfTwo);
+            string saveDecryption1 = Directory.GetParent(Files.DecryptedPdfOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPdfOne);
+            string saveDecryption2 = Directory.GetParent(Files.DecryptedPdfTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPdfTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -289,9 +289,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgPngTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.PngToEncryptOne).FullName + Files.PngToEncryptOne;
-            string saveEncryption = Directory.GetParent(Files.EncryptedPngOne).FullName + Files.EncryptedPngOne;
-            string saveDecryption = Directory.GetParent(Files.DecryptedPngOne).FullName + Files.DecryptedPngOne;
+            string fileToEncrypt = Directory.GetParent(Files.PngToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptOne);
+            string saveEncryption = Directory.GetParent(Files.EncryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngOne);
+            string saveDecryption = Directory.GetParent(Files.DecryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPngOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -302,12 +302,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgPngSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.PngToEncryptOne).FullName + Files.PngToEncryptOne;
-            string saveEncryption1 = Directory.GetParent(Files.EncryptedPngOne).FullName + Files.EncryptedPngOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.PngToEncryptTwo).FullName + Files.PngToEncryptTwo;
-            string saveEncryption2 = Directory.GetParent(Files.EncryptedPngTwo).FullName + Files.EncryptedPngTwo;
-            string saveDecryption1 = Directory.GetParent(Files.DecryptedPngOne).FullName + Files.DecryptedPngOne;
-            string saveDecryption2 = Directory.GetParent(Files.DecryptedPngTwo).FullName + Files.DecryptedPngTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.PngToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptOne);
+            string saveEncryption1 = Directory.GetParent(Files.EncryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.PngToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptTwo);
+            string saveEncryption2 = Directory.GetParent(Files.EncryptedPngTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngTwo);
+            string saveDecryption1 = Directory.GetParent(Files.DecryptedPngOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPngOne);
+            string saveDecryption2 = Directory.GetParent(Files.DecryptedPngTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedPngTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -325,9 +325,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgJpegTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.JpegToEncryptOne).FullName + Files.JpegToEncryptOne;
-            string saveEncryption = Directory.GetParent(Files.EncryptedJpegOne).FullName + Files.EncryptedJpegOne;
-            string saveDecryption = Directory.GetParent(Files.DecryptedJpegOne).FullName + Files.DecryptedJpegOne;
+            string fileToEncrypt = Directory.GetParent(Files.JpegToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptOne);
+            string saveEncryption = Directory.GetParent(Files.EncryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegOne);
+            string saveDecryption = Directory.GetParent(Files.DecryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedJpegOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -337,12 +337,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgJpegSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.JpegToEncryptOne).FullName + Files.JpegToEncryptOne;
-            string saveEncryption1 = Directory.GetParent(Files.EncryptedJpegOne).FullName + Files.EncryptedJpegOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.JpegToEncryptTwo).FullName + Files.JpegToEncryptTwo;
-            string saveEncryption2 = Directory.GetParent(Files.EncryptedJpegTwo).FullName + Files.EncryptedJpegTwo;
-            string saveDecryption1 = Directory.GetParent(Files.DecryptedJpegOne).FullName + Files.DecryptedJpegOne;
-            string saveDecryption2 = Directory.GetParent(Files.DecryptedJpegTwo).FullName + Files.DecryptedJpegTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.JpegToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptOne);
+            string saveEncryption1 = Directory.GetParent(Files.EncryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.JpegToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptTwo);
+            string saveEncryption2 = Directory.GetParent(Files.EncryptedJpegTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegTwo);
+            string saveDecryption1 = Directory.GetParent(Files.DecryptedJpegOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedJpegOne);
+            string saveDecryption2 = Directory.GetParent(Files.DecryptedJpegTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedJpegTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -360,9 +360,9 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgGifTest()
         {
-            string fileToEncrypt = Directory.GetParent(Files.GifToEncryptOne).FullName + Files.GifToEncryptOne;
-            string saveEncryption = Directory.GetParent(Files.EncryptedGifOne).FullName + Files.EncryptedGifOne;
-            string saveDecryption = Directory.GetParent(Files.DecryptedGifOne).FullName + Files.DecryptedGifOne;
+            string fileToEncrypt = Directory.GetParent(Files.GifToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptOne);
+            string saveEncryption = Directory.GetParent(Files.EncryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifOne);
+            string saveDecryption = Directory.GetParent(Files.DecryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedGifOne);
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
@@ -372,12 +372,12 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void DecryptImgGifSameSeedTest()
         {
-            string fileToEncrypt1 = Directory.GetParent(Files.GifToEncryptOne).FullName + Files.GifToEncryptOne;
-            string saveEncryption1 = Directory.GetParent(Files.EncryptedGifOne).FullName + Files.EncryptedGifOne;
-            string fileToEncrypt2 = Directory.GetParent(Files.GifToEncryptTwo).FullName + Files.GifToEncryptTwo;
-            string saveEncryption2 = Directory.GetParent(Files.EncryptedGifTwo).FullName + Files.EncryptedGifTwo;
-            string saveDecryption1 = Directory.GetParent(Files.DecryptedGifOne).FullName + Files.DecryptedGifOne;
-            string saveDecryption2 = Directory.GetParent(Files.DecryptedGifTwo).FullName + Files.DecryptedGifTwo;
+            string fileToEncrypt1 = Directory.GetParent(Files.GifToEncryptOne).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptOne);
+            string saveEncryption1 = Directory.GetParent(Files.EncryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifOne);
+            string fileToEncrypt2 = Directory.GetParent(Files.GifToEncryptTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptTwo);
+            string saveEncryption2 = Directory.GetParent(Files.EncryptedGifTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifTwo);
+            string saveDecryption1 = Directory.GetParent(Files.DecryptedGifOne).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedGifOne);
+            string saveDecryption2 = Directory.GetParent(Files.DecryptedGifTwo).FullName + "\\" + FileExtFuncts.removePaths(Files.DecryptedGifTwo);
             string seed = "1";
             Encryption encryptor = new Encryption();
             encryptor.Encrypt(fileToEncrypt1, saveEncryption1, seed);
@@ -396,39 +396,36 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void testResourceLocations()
         {
-            //C:\Users\fran\Documents\Visual Studio 2017\Git Repository\Network Encryption\Networking Encryption\Networking EncryptionTests\EncryptionTestFiles
-            string a = Directory.GetParent(Files.DecryptedGifOne).FullName;
-            a += FileExtentionFuncts.prependFile(Files.DecryptedGifOne);
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifOne).FullName) +  FileExtentionFuncts.prependFile(Files.DecryptedGifOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedGifTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedGifTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedJpegOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedJpegTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedJpegTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPdfOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPdfTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPdfTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPngOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedPngTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedPngTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextOne).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedTextOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.DecryptedTextTwo).FullName) + FileExtentionFuncts.prependFile(Files.DecryptedTextTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedGifOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedGifTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedGifTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedJpegOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedJpegTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedJpegTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPdfOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPdfTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPdfTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPngOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedPngTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedPngTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextOne).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedTextOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.EncryptedTextTwo).FullName) + FileExtentionFuncts.prependFile(Files.EncryptedTextTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.GifToEncryptOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.GifToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.GifToEncryptTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.JpegToEncryptOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.JpegToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.JpegToEncryptTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.PdfToEncryptOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PdfToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.PdfToEncryptTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.PngToEncryptOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.PngToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.PngToEncryptTwo)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptOne).FullName) + FileExtentionFuncts.prependFile(Files.TextToEncryptOne)));
-            Assert.IsTrue(Directory.Exists((Directory.GetParent(Files.TextToEncryptTwo).FullName) + FileExtentionFuncts.prependFile(Files.TextToEncryptTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedGifOne).FullName) + "\\" +  FileExtFuncts.removePaths(Files.DecryptedGifOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedGifTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedGifTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedJpegOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedJpegOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedJpegTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedJpegTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedPdfOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedPdfOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedPdfTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedPdfTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedPngOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedPngOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedPngTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedPngTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedTextOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedTextOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.DecryptedTextTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.DecryptedTextTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedGifOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedGifTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedGifTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedJpegOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedJpegTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedJpegTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedPdfOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedPdfTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedPdfTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedPngOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedPngTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedPngTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedTextOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.EncryptedTextTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.EncryptedTextTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.GifToEncryptOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.GifToEncryptTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.GifToEncryptTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.JpegToEncryptOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.JpegToEncryptTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.JpegToEncryptTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.PdfToEncryptOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.PdfToEncryptTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.PdfToEncryptTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.PngToEncryptOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.PngToEncryptTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.PngToEncryptTwo)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.TextToEncryptOne).FullName) + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptOne)));
+            Assert.IsTrue(File.Exists((Directory.GetParent(Files.TextToEncryptTwo).FullName) + "\\" + FileExtFuncts.removePaths(Files.TextToEncryptTwo)));
         }
     }
 }

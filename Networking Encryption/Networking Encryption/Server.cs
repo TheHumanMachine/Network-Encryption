@@ -51,13 +51,13 @@ namespace Networking_Encryption
                     allDone.Reset();
 
                     Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept(new AsyncCallback(AcceptCallBack), listener);
+                    //listener.BeginAccept(new AsyncCallback(AcceptCallBack), listener);
                     allDone.WaitOne();
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString())
+                Console.WriteLine(e.ToString());
             }
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();

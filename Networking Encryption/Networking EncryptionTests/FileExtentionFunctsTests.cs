@@ -10,56 +10,76 @@ using Networking_EncryptionTests.Properties;
 namespace Networking_Encryption.Tests
 {
     [TestClass()]
-    public class FileExtentionFunctsTests
+    public class FileExtFunctsTests
     {
         [TestMethod()]
         public void checkExtentionSameExtention()
         {
-           Assert.IsTrue(FileExtentionFuncts.checkExtention(Files.DecryptedGifOne, Files.DecryptedGifTwo));
+           Assert.IsTrue(FileExtFuncts.checkExtention(Files.DecryptedGifOne, Files.DecryptedGifTwo));
         }
         [TestMethod()]
         public void checkExtentionDifExtention()
         {
-            Assert.IsFalse(FileExtentionFuncts.checkExtention(Files.DecryptedGifTwo, Files.DecryptedJpegOne));
+            Assert.IsFalse(FileExtFuncts.checkExtention(Files.DecryptedGifTwo, Files.DecryptedJpegOne));
         }
         [TestMethod()]
         public void checkExtentionNoExtention()
         {
-            Assert.IsFalse(FileExtentionFuncts.checkExtention(Files.DecryptedJpegOne,"this is a test"));
+            Assert.IsFalse(FileExtFuncts.checkExtention(Files.DecryptedJpegOne,"this is a test"));
         }
         [TestMethod()]
         public void getExtentionHasExtentionTest()
         {
-            Assert.AreEqual(".txt", FileExtentionFuncts.getExtention(Files.DecryptedTextOne));
+            Assert.AreEqual(".txt", FileExtFuncts.getExtention(Files.DecryptedTextOne));
         }
         [TestMethod()]
         public void getExtentionNoExtentionTest()
         {
-            Assert.ThrowsException<FormatException>(() => FileExtentionFuncts.getExtention("this is a test"));
+            Assert.ThrowsException<FormatException>(() => FileExtFuncts.getExtention("this is a test"));
         }
         [TestMethod()]
         public void checkHasExtentionHasExtention()
         {
-            Assert.IsTrue(FileExtentionFuncts.checkHasExtention(Files.DecryptedGifOne));
+            Assert.IsTrue(FileExtFuncts.checkHasExtention(Files.DecryptedGifOne));
         }
         [TestMethod()]
         public void checkHasExtentionNoExtentionTest()
         {
-            Assert.IsFalse(FileExtentionFuncts.checkHasExtention("this is a test"));
+            Assert.IsFalse(FileExtFuncts.checkHasExtention("this is a test"));
         }
         [TestMethod()]
         public void prependFileNeedsPrepend()
         {
             string root = "..\\";
             string file = "test.txt";
-            string a = FileExtentionFuncts.prependFile((root + file));
-            Assert.AreEqual(file, FileExtentionFuncts.prependFile((root + file)));
+            string a = FileExtFuncts.prependFile((root + file));
+            Assert.AreEqual(file, FileExtFuncts.prependFile((root + file)));
         }
         [TestMethod()]
         public void prependFileNoPrependNeeded()
         {
             string file = "test.txt";
-            Assert.AreEqual(file, FileExtentionFuncts.prependFile(file));
+            Assert.AreEqual(file, FileExtFuncts.prependFile(file));
+        }
+        [TestMethod()]
+        public void removePathsRemoveTest()
+        {
+            string path = "..\\..\\EncryptionTestFiles\\DecryptedGifOne.gif";
+            string file = "DecryptedGifOne.gif";
+            Assert.AreEqual(file, FileExtFuncts.removePaths(path));
+        }
+        [TestMethod()]
+        public void removePathsMultRemovesTest()
+        {
+            string path = "..\\..\\EncryptionTestFiles\\EncryptionTestFiles\\DecryptedGifOne.gif";
+            string file = "DecryptedGifOne.gif";
+            Assert.AreEqual(file, FileExtFuncts.removePaths(path));
+        }
+        [TestMethod()]
+        public void removePathsNoRemoves()
+        {
+            string file = "DecryptedGifOne.gif";
+            Assert.AreEqual(file, FileExtFuncts.removePaths(file));
         }
     }
 }
