@@ -32,13 +32,14 @@ namespace Networking_Encryption
 
         private static String response = String.Empty;
 
-        private static void StartClient()
+        public static void StartClient()
         {
             try
             {
-
-                IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+                Console.WriteLine("Server Client Started...");
+                IPHostEntry ipHostInfo = Dns.Resolve("localhost");
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
+                Console.WriteLine("Client IpAddress: {0}", ipAddress);
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
                 Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -54,6 +55,7 @@ namespace Networking_Encryption
 
                 Console.WriteLine("Response received : {0}", response);
 
+                Console.ReadLine();
                 client.Shutdown(SocketShutdown.Both);
                 client.Close();               
             }catch(Exception e)
