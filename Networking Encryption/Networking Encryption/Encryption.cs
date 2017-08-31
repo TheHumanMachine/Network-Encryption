@@ -397,26 +397,6 @@ namespace Networking_Encryption
         {
             throw new NotImplementedException();
         }
-        private byte[] desKey;
-        private byte[] desSeed;
-        private SymmetricAlgorithm symetricAlgo;
-        private string path;
-        private void TextFileEncrypt(string data, string saveLocation)
-        {
-            byte[] encodedData = Encoding.Unicode.GetBytes(data);
-            using (FileStream fileStrm = new FileStream(saveLocation, FileMode.Create, FileAccess.Write))
-            {
-                //genKey
-                //genSeed
-                using (ICryptoTransform transform = symetricAlgo.CreateEncryptor(desKey,desSeed))
-                {
-                    using (CryptoStream cryptoStrm = new CryptoStream(fileStrm,transform,CryptoStreamMode.Write))
-                    {
-                        cryptoStrm.Write(encodedData, 0, encodedData.Length);
-                    }
-                }
-            }
-        }
         /// <summary>
         /// function  decrypts the given file using the DES encrytion class
         /// </summary>
@@ -465,6 +445,24 @@ namespace Networking_Encryption
                 }
             }
             return areEqual;
+        }
+        /// <summary>
+        /// reads in a given file
+        /// <para>returns data inside the file</para>
+        /// </summary>
+        /// <param name="path">name of the file</param>
+        /// <returns>data of the file in the form of  string</returns>
+        private string readFile(string path)
+        {
+            string data = "";
+            using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (StreamReader strmReader = new StreamReader(fileStrm))
+                {
+                    data = strmReader.ReadToEnd();
+                }
+            }
+            return data;
         }
     }
 }

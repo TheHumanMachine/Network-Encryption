@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DesEncryption.cs" />
     <Compile Include="FilesExtentionFuncts.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerClient.cs" />
