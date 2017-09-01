@@ -525,7 +525,10 @@ namespace Networking_Encryption
         /// <param name="seed"> seed to run encryption algo</param>
         public void Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
-            throw new NotImplementedException();
+            using (DesEncryption des = new DesEncryption())
+            {
+                des.TextFileEncrypt(readFile(readLocation), SaveLocation, seed);
+            }
         }
         /// <summary>
         /// function  decrypts the given file using the DES encrytion class
@@ -534,7 +537,8 @@ namespace Networking_Encryption
         /// <param name="saveLocation">file to write to</param>
         public void Decrypt(string readLocation,string saveLocation)
         {
-            throw new NotImplementedException();
+            DesEncryption des = new DesEncryption();
+            writeFile(des.decryptFile(readLocation), saveLocation);
         }
         public bool compareFile(string fileName,string SecondFileName)
         {
@@ -593,6 +597,16 @@ namespace Networking_Encryption
                 }
             }
             return data;
+        }
+        private void writeFile(string data, string path)
+        {
+            using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Write))
+            {
+                using (StreamWriter strmWrtr = new StreamWriter(fileStrm))
+                {
+                    strmWrtr.Write(data);
+                }
+            }
         }
     }
 }
