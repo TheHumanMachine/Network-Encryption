@@ -49,6 +49,13 @@ namespace Networking_Encryption
                 get { return seed; }
             }
             /// <summary>
+            /// function resets the key & seed to null
+            /// </summary>
+            public void flush()
+            {
+                key = seed = null;
+            }
+            /// <summary>
             /// generates a key and Seed from the given seed if the seed != "" else generates a random key and Seed
             /// </summary>
             /// <param name="seed"></param>
@@ -525,9 +532,14 @@ namespace Networking_Encryption
         /// <param name="seed"> seed to run encryption algo</param>
         public void Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
-            using (DesEncryption des = new DesEncryption())
+            using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
             {
+                DesEncryption des = new DesEncryption();
+                des.SymetricAlgo = tdes;
                 des.TextFileEncrypt(readFile(readLocation), SaveLocation, seed);
+                byte[] key = des.Key; // size = 24
+                byte[] Seed = des.Seed; // size = 8
+                des.flush();
             }
         }
         /// <summary>
@@ -535,10 +547,16 @@ namespace Networking_Encryption
         /// </summary>
         /// <param name="readLocation"> file to read</param>
         /// <param name="saveLocation">file to write to</param>
-        public void Decrypt(string readLocation,string saveLocation)
+        public void Decrypt(string readLocation,string saveLocation,byte[] key = null,Byte[] seed = null)
         {
-            DesEncryption des = new DesEncryption();
-            writeFile(des.decryptFile(readLocation), saveLocation);
+            using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
+            {
+                DesEncryption des = new DesEncryption();
+                des.SymetricAlgo = tdes;
+                des.Key = key;
+                des.Seed = seed;
+                writeFile(des.decryptFile(readLocation), saveLocation);
+            }
         }
         public bool compareFile(string fileName,string SecondFileName)
         {

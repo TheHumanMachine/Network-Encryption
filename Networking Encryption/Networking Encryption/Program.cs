@@ -17,7 +17,7 @@ namespace Networking_Encryption
     {
         static void Main(string[] args)
         {
-            Server.StartListening();
+
         }
     }
 }
