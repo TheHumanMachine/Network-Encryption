@@ -57,7 +57,7 @@ namespace Networking_Encryption
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString())
+                Console.WriteLine(e.ToString());
             }
             Console.WriteLine("\nPress ENTER to continue...");
             Console.Read();
