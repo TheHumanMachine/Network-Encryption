@@ -54,14 +54,22 @@ namespace Networking_Encryption
             public void flush()
             {
                 key = seed = null;
+                symetricAlgo = null;
             }
             /// <summary>
             /// generates a key and Seed from the given seed if the seed != "" else generates a random key and Seed
             /// </summary>
             /// <param name="seed"></param>
-            private void genKeys(string seed = "")
+            private void genKeys(byte[] seed)
             {
-                genSeed();
+                if (seed == null)
+                {
+                    genSeed();
+                }
+                else
+                {
+                    Seed = seed;
+                }
                 GenKey();
             }
             /// <summary>
@@ -70,7 +78,7 @@ namespace Networking_Encryption
             /// <param name="data">information to encrypt</param>
             /// <param name="saveLocation">path to save the data</param>
             /// <param name="seed">place to start the algo from</param>
-            public void TextFileEncrypt(string data, string saveLocation, string seed = "")
+            public void TextFileEncrypt(string data, string saveLocation, byte[] seed = null)
             {
                 byte[] encodedData = Encoding.Unicode.GetBytes(data);
                 using (FileStream fileStrm = new FileStream(saveLocation, FileMode.Create, FileAccess.Write))
@@ -534,12 +542,22 @@ namespace Networking_Encryption
         {
             using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
             {
-                DesEncryption des = new DesEncryption();
-                des.SymetricAlgo = tdes;
-                des.TextFileEncrypt(readFile(readLocation), SaveLocation, seed);
-                byte[] key = des.Key; // size = 24
-                byte[] Seed = des.Seed; // size = 8
-                des.flush();
+                {
+                    DesEncryption des = new DesEncryption();
+                    des.SymetricAlgo = tdes;
+                    if (seed == "")
+                    {
+                        des.TextFileEncrypt(readFile(readLocation), SaveLocation);
+                    }
+                    else
+                    {
+                        des.TextFileEncrypt(readFile(readLocation), SaveLocation, makeSeed(seed, EncryptionMode.Des));
+                    }
+                    byte[] key = des.Key; // size = 24
+                    byte[] Seed = des.Seed; // size = 8
+                    des.flush();
+                    des = null;
+                }
             }
         }
         /// <summary>
@@ -616,6 +634,61 @@ namespace Networking_Encryption
             }
             return data;
         }
+        private enum EncryptionMode {RijDanael,Des };
+        /// <summary>
+        /// function makes a valid seed out of the given string
+        /// </summary>
+        /// <param name="seed">string to parse</param>
+        /// <param name="mode">type of valid seed to make</param>
+        /// <returns> a valid seed to be used for encryption</returns>
+        private byte[] makeSeed(string seed,EncryptionMode mode)
+        {
+            byte[] seedArray;
+            if (mode == EncryptionMode.RijDanael)
+            {
+                seedArray = new byte[16];
+            }
+            else
+            {
+                seedArray = new byte[8];
+            }
+            parseSeed(seed, seedArray);
+            return seedArray;
+        }
+        /// <summary>
+        /// function parses given string to a byte array
+        /// </summary>
+        /// <param name="unParsedSeed">string to parse</param>
+        /// <param name="seed">array to parse to</param>
+        /// <returns></returns>
+        private byte[] parseSeed(string unParsedSeed,byte[] seed)
+        {
+            int seedLen = unParsedSeed.Length;
+            for (int index = 0; index < seed.Length; index++)
+            {
+                if (index + 2 < seedLen)
+                {
+                    seed[index] = Convert.ToByte(unParsedSeed.Substring(index, 3));
+                }
+                else if(index < seedLen && index + 2 > seedLen)
+                {
+                    string temp = unParsedSeed.Substring(index);
+                    temp = temp.Length == 1 ? "00" + temp : "0" + temp;
+                    seed[index] = Convert.ToByte(temp);
+                }
+                else
+                {
+                    Random rand = new Random();
+                    seed[index] = Convert.ToByte(rand.Next(0, 255)); // [0,255] = domain of a byte
+                }
+            }
+            return seed;
+        }
+        /// <summary>
+        /// function writes given data to the given file
+        /// </summary>
+        /// <param name="data">data to write</param>
+        /// <param name="path">file to write to</param>
         private void writeFile(string data, string path)
         {
             using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Write))
