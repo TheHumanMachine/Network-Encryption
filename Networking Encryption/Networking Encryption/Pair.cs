@@ -190,7 +190,8 @@ namespace Networking_Encryption
         /// function parses given string into a valid size byte array
         /// </summary>
         /// <param name="unparsedStr">string to parse</param>
-        /// <param name="validSize">the size of the array</param>
+        /// <<param name="isKey"> true if parse if for a key</param>
+        /// <param name="type"> type of encryption it will be used for</param>
         /// <returns></returns>
         public byte[] parseString(string unparsedStr, EncryptionMode type, bool isKey)
         {
