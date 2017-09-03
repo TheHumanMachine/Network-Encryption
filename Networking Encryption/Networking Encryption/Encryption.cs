@@ -13,12 +13,12 @@ using System.IO;
  */
 namespace Networking_Encryption
 {
+    public enum EncryptionMode { Null, RijDanael, Des };
     /// <summary>
     /// class encrypts and decrypts given data
     /// </summary>
     public class Encryption
     {
-
         #region DES Encryption Class
         private class DesEncryption
         {
@@ -634,7 +634,6 @@ namespace Networking_Encryption
             }
             return data;
         }
-        private enum EncryptionMode {RijDanael,Des };
         /// <summary>
         /// function makes a valid seed out of the given string
         /// </summary>
@@ -655,35 +654,35 @@ namespace Networking_Encryption
             parseSeed(seed, seedArray);
             return seedArray;
         }
-        /// <summary>
-        /// function parses given string to a byte array
-        /// </summary>
-        /// <param name="unParsedSeed">string to parse</param>
-        /// <param name="seed">array to parse to</param>
-        /// <returns></returns>
-        private byte[] parseSeed(string unParsedSeed,byte[] seed)
-        {
-            int seedLen = unParsedSeed.Length;
-            for (int index = 0; index < seed.Length; index++)
-            {
-                if (index + 2 < seedLen)
-                {
-                    seed[index] = Convert.ToByte(unParsedSeed.Substring(index, 3));
-                }
-                else if(index < seedLen && index + 2 > seedLen)
-                {
-                    string temp = unParsedSeed.Substring(index);
-                    temp = temp.Length == 1 ? "00" + temp : "0" + temp;
-                    seed[index] = Convert.ToByte(temp);
-                }
-                else
-                {
-                    Random rand = new Random();
-                    seed[index] = Convert.ToByte(rand.Next(0, 255)); // [0,255] = domain of a byte
-                }
-            }
-            return seed;
-        }
+        ///// <summary>
+        ///// function parses given string to a byte array
+        ///// </summary>
+        ///// <param name="unParsedSeed">string to parse</param>
+        ///// <param name="seed">array to parse to</param>
+        ///// <returns></returns>
+        //private byte[] parseSeed(string unParsedSeed,byte[] seed)
+        //{
+        //    int seedLen = unParsedSeed.Length;
+        //    for (int index = 0; index < seed.Length; index++)
+        //    {
+        //        if (index + 2 < seedLen)
+        //        {
+        //            seed[index] = Convert.ToByte(unParsedSeed.Substring(index, 3));
+        //        }
+        //        else if(index < seedLen && index + 2 > seedLen)
+        //        {
+        //            string temp = unParsedSeed.Substring(index);
+        //            temp = temp.Length == 1 ? "00" + temp : "0" + temp;
+        //            seed[index] = Convert.ToByte(temp);
+        //        }
+        //        else
+        //        {
+        //            Random rand = new Random();
+        //            seed[index] = Convert.ToByte(rand.Next(0, 255)); // [0,255] = domain of a byte
+        //        }
+        //    }
+        //    return seed;
+        //}
         /// <summary>
         /// function writes given data to the given file
         /// </summary>
