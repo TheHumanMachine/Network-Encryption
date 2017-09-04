@@ -17,12 +17,14 @@ namespace Networking_Encryption
         public byte[] buffer = new byte[BufferSize];
 
         public StringBuilder sb = new StringBuilder();
-
     }
 
     class ServerClient
     {
-        private const int port = 8008;
+        #region ServerClient Variables 
+        private const String HOST = "localhost";
+
+        private const int PORT = 8008;
 
         private static ManualResetEvent connectDone = new ManualResetEvent(false);
 
@@ -31,16 +33,17 @@ namespace Networking_Encryption
         private static ManualResetEvent receiveDone = new ManualResetEvent(false);
 
         private static String response = String.Empty;
+        #endregion 
 
         public static void StartClient()
         {
             try
             {
                 Console.WriteLine("Server Client Started...");
-                IPHostEntry ipHostInfo = Dns.Resolve("localhost");
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(HOST);
                 IPAddress ipAddress = ipHostInfo.AddressList[0];
                 Console.WriteLine("Client IpAddress: {0}", ipAddress);
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+                IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
 
                 Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -56,8 +59,9 @@ namespace Networking_Encryption
                 Console.WriteLine("Response received : {0}", response);
 
                 Console.ReadLine();
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();               
+
+                Disconnect(client);               
+
             }catch(Exception e)
             {
                 Console.WriteLine(e.ToString());
@@ -69,11 +73,8 @@ namespace Networking_Encryption
             try
             {
                 Socket client = (Socket)ar.AsyncState;
-
                 client.EndConnect(ar);
-
                 Console.WriteLine("Socket connected to {0}", client.RemoteEndPoint.ToString());
-
                 connectDone.Set();
             }catch(Exception e)
             {
@@ -81,6 +82,7 @@ namespace Networking_Encryption
             }
         }
 
+        #region Send/Receive Functions
         private static void Receive(Socket client)
         {
             try
@@ -123,6 +125,17 @@ namespace Networking_Encryption
             }
         }
 
+        private static void Disconnect(Socket client)
+        {
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
+        }
+
+        private static void SendFile(Socket client)
+        {
+
+        }
+
         private static void Send(Socket client, String data)
         {
             byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -145,6 +158,7 @@ namespace Networking_Encryption
                 Console.WriteLine(e.ToString());
             }
         }
+        #endregion 
 
         //Needs a main - Has to be ran as a different program than the server to see if they connect properly. 
     }
