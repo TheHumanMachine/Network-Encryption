@@ -177,19 +177,22 @@ namespace Networking_Encryption
             int strLen = unparsedStr.Length;
             byte[] validArray = new byte[validSize];
             int[] tempArray = new int[validSize];
+            int strIndex = 0;
             for (int index = 0; index < validArray.Length; index++)
             {
-                if (index + 2 < strLen)
+
+                if (strIndex + 2 < strLen)
                 {
-                    tempArray[index] = Convert.ToInt32(unparsedStr.Substring(index, 3));
+                    tempArray[index] = Convert.ToInt32(unparsedStr.Substring(strIndex, 3));
+                    strIndex += 3;
                 }
-                else if (index < strLen && index + 2 > strLen)
+                else if (strIndex < strLen &&  strIndex + 2 > strLen)
                 {
-                    string temp = unparsedStr.Substring(index);
+                    string temp = unparsedStr.Substring(strIndex);
                     temp = temp.Length == 1 ? "00" + temp : "0" + temp;
                     tempArray[index] = Convert.ToInt32(temp);
                 }
-                if (index >= strLen && index < validSize)
+                if (strIndex >= strLen && strIndex < validSize)
                 {
                     throw new FormatException("given string is of invalid size");
                 }
@@ -198,8 +201,12 @@ namespace Networking_Encryption
             {
                 throw new ArgumentException("contains numbers too large or too small to be a byte");
             }
+            if (!checkSize(tempArray))
+            {
+                throw new ArgumentException("string is of invalid size");
+            }
             validArray = Array.ConvertAll(tempArray, Convert.ToByte);
-            return seed;
+            return validArray;
         }
         /// <summary>
         /// function parses given string into a valid size byte array
@@ -222,15 +229,17 @@ namespace Networking_Encryption
             int strLen = unparsedStr.Length;
             byte[] validArray = new byte[validSize];
             int[] tempArray = new int[validSize];
+            int strIndex = 0;
             for (int index = 0; index < validArray.Length; index++)
             {
-                if (index + 2 < strLen)
+                if (strIndex + 2 < strLen)
                 {
-                    tempArray[index] = Convert.ToByte(unparsedStr.Substring(index, 3));
+                    tempArray[index] = Convert.ToByte(unparsedStr.Substring(strIndex, 3));
+                    strIndex += 3;
                 }
-                else if (index < strLen && index + 2 > strLen)
+                else if (strIndex < strLen && strIndex + 2 > strLen)
                 {
-                    string temp = unparsedStr.Substring(index);
+                    string temp = unparsedStr.Substring(strIndex);
                     temp = temp.Length == 1 ? "00" + temp : "0" + temp;
                     tempArray[index] = Convert.ToByte(temp);
                 }
@@ -240,12 +249,36 @@ namespace Networking_Encryption
                 }
 
             }
-            if (checkIsValidByte(tempArray))
+            if (!checkIsValidByte(tempArray))
             {
                 throw new ArgumentException("contains numbers too large or too small to be a byte");
             }
+            if (!checkSize(tempArray))
+            {
+                throw new ArgumentException("string is of invalid size");
+            }
             validArray = Array.ConvertAll(tempArray,Convert.ToByte);
             return validArray;
+        }
+        /// <summary>
+        /// function checks if the parsing of the string was of correct size
+        /// <para>returns true if the function is of valid syntax</para>
+        /// </summary>
+        /// <param name="array">array to check</param>
+        /// <returns>returns true if the array is of valid syntax</returns>
+        private static bool checkSize(int[] array)
+        {
+            bool correctSize = true;
+            int index = 0;
+            while (correctSize == true && index < array.Length)
+            {
+                if (array[index] == 0 && array[index] == array[index + 1])
+                {
+                    correctSize = false;
+                }
+                index++;
+            }
+            return correctSize;
         }
         /// <summary>
         /// functions checks is if the given array is within the bounds of a valid byte
