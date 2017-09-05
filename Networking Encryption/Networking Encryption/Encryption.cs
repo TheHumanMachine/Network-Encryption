@@ -490,7 +490,7 @@ namespace Networking_Encryption
         /// <param name="str"> str to encrypt</param>
         /// <param name="seed">the specified seed to run the encryption on</param>
         /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
-        public string EncryptStr(string str, string seed = "")
+        public string EncryptStr(string str,ref Pair keys, string seed = "")
         {
             if (!FileExtFuncts.checkHasExtention(str))
             {
@@ -514,7 +514,7 @@ namespace Networking_Encryption
         /// </summary>
         /// <param name="obj"> the obj to decrypt</param>
         /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
-        public string Decrypt(string obj)
+        public string Decrypt(string obj,Pair keys)
         {
             string decryptedObj = "";
             if (!FileExtFuncts.checkHasExtention(obj))
@@ -526,7 +526,7 @@ namespace Networking_Encryption
             }
             else
             {
-                Decrypt(obj, obj);
+                Decrypt(obj, obj, keys);
             }
             return decryptedObj;
         }
@@ -534,12 +534,15 @@ namespace Networking_Encryption
 
         /// <summary>
         /// function encrypts the given file using Des Encryptor Class
+        /// <para>returns a pair that holds key seed and type of encryption used</para>
         /// </summary>
         /// <param name="readLocation"> file to read from</param>
         /// <param name="SaveLocation"> file to write to</param>
         /// <param name="seed"> seed to run encryption algo</param>
-        public void Encrypt(string readLocation, string SaveLocation, string seed = "")
+        /// <returns>a pair that holds key seed and type of encryption used</returns>
+        public Pair Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
+            Pair keys = null;
             using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
             {
                 {
@@ -553,11 +556,9 @@ namespace Networking_Encryption
                     {
                         des.TextFileEncrypt(readFile(readLocation), SaveLocation, makeSeed(seed, EncryptionMode.Des));
                     }
-                    byte[] key = des.Key; // size = 24
-                    byte[] Seed = des.Seed; // size = 8
-                    des.flush();
-                    des = null;
+                    keys = new Pair(des.Key, des.Seed, EncryptionMode.Des);
                 }
+                return keys;
             }
         }
         /// <summary>
@@ -565,14 +566,19 @@ namespace Networking_Encryption
         /// </summary>
         /// <param name="readLocation"> file to read</param>
         /// <param name="saveLocation">file to write to</param>
-        public void Decrypt(string readLocation,string saveLocation,byte[] key = null,Byte[] seed = null)
+        /// <param name="keys">the holder of decryption key and seed</param>
+        public void Decrypt(string readLocation,string saveLocation,Pair keys)
         {
+            if (keys.Mode != EncryptionMode.Des)
+            {
+                throw new ArgumentException("wrong type of key");
+            }
             using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
             {
                 DesEncryption des = new DesEncryption();
                 des.SymetricAlgo = tdes;
-                des.Key = key;
-                des.Seed = seed;
+                des.Key = keys.Key;
+                des.Seed = keys.Seed;
                 writeFile(des.decryptFile(readLocation), saveLocation);
             }
         }
