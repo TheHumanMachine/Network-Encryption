@@ -78,12 +78,13 @@ namespace Networking_Encryption
             /// <param name="data">information to encrypt</param>
             /// <param name="saveLocation">path to save the data</param>
             /// <param name="seed">place to start the algo from</param>
-            public void TextFileEncrypt(string data, string saveLocation, byte[] seed = null)
+            public void TextFileEncrypt(string data, string saveLocation)
             {
                 byte[] encodedData = Encoding.Unicode.GetBytes(data);
                 using (FileStream fileStrm = new FileStream(saveLocation, FileMode.Create, FileAccess.Write))
                 {
-                    genKeys(seed);
+                    GenKey();
+                    genSeed();
                     using (ICryptoTransform transform = symetricAlgo.CreateEncryptor(key, this.seed))
                     {
                         using (CryptoStream cryptoStrm = new CryptoStream(fileStrm, transform, CryptoStreamMode.Write))
@@ -120,19 +121,22 @@ namespace Networking_Encryption
             /// </summary>
             private void genSeed()
             {
-                if (null != (symetricAlgo as TripleDESCryptoServiceProvider))
+                if (seed == null)
                 {
-                    TripleDESCryptoServiceProvider tdes;
-                    tdes = symetricAlgo as TripleDESCryptoServiceProvider;
-                    tdes.GenerateIV();
-                    seed = tdes.IV;
-                }
-                else if (null != (symetricAlgo as RijndaelManaged))
-                {
-                    RijndaelManaged rdProvider;
-                    rdProvider = symetricAlgo as RijndaelManaged;
-                    rdProvider.GenerateIV();
-                    seed = rdProvider.IV;
+                    if (null != (symetricAlgo as TripleDESCryptoServiceProvider))
+                    {
+                        TripleDESCryptoServiceProvider tdes;
+                        tdes = symetricAlgo as TripleDESCryptoServiceProvider;
+                        tdes.GenerateIV();
+                        seed = tdes.IV;
+                    }
+                    else if (null != (symetricAlgo as RijndaelManaged))
+                    {
+                        RijndaelManaged rdProvider;
+                        rdProvider = symetricAlgo as RijndaelManaged;
+                        rdProvider.GenerateIV();
+                        seed = rdProvider.IV;
+                    }
                 }
             }
             /// <summary>
@@ -167,84 +171,66 @@ namespace Networking_Encryption
         #region Rijdael Encryption Class
         class RijdaelEncryption
         {
-            /// <summary>
-            /// key for Rijndael Algo
-            /// </summary>
-            private static byte[] rdKey = null;
-            /// <summary>
-            /// seed to run Rijndael on
-            /// </summary>
-            private static byte[] rdSeed = null;
-            /// <summary>
-            /// generates a random key to be used for the encryption algo
-            /// </summary>
-            /// <param name="provider"> class to intialize the key</param>
-            private static void rdGenerateKey(RijndaelManaged provider)
+            private static byte[] key = null;
+            private static byte[] seed = null;
+
+            #region get/set functions
+            public byte[] Key
             {
-                if (rdKey == null)
+                get { return key; }
+                set { key = value; }
+            }
+            public byte[] Seed
+            {
+                get { return seed; }
+                set { seed = value; }
+            }
+            /// <summary>
+            /// creates a seed for the encryption
+            /// </summary>
+            /// <param name="provider">class to generate the seed</param>
+            public void genSeed(RijndaelManaged provider)
+            {
+                if (seed == null)
                 {
-                    provider.KeySize = 256;
                     provider.GenerateKey();
-                    rdKey = provider.Key;
+                    seed = provider.IV;
                 }
             }
             /// <summary>
-            /// function intializes key and seed compents for the string encryption
+            /// generates a random key
             /// </summary>
-            /// <param name="provider"> stream to intialize the key & seed compenents</param>
-            /// <param name="key">the key to set if given one</param>
-            /// <param name="seed">the seed to intialize of off if given</param>
-            private static void rdGenerateKeys(RijndaelManaged provider, byte[] key = null, byte[] seed = null)
+            /// <param name="provider"> class to intialize the key</param>
+            public void genKey(RijndaelManaged provider)
             {
                 if (key == null)
                 {
-                    rdGenerateKey(provider);
+                    provider.KeySize = 256;
+                    provider.GenerateKey();
+                    key = provider.Key;
                 }
-                else
-                {
-                    rdKey = key;
-                }
-                if (seed == null)
-                {
-                    rdGenerateSeed(provider);
-                }
-                else
-                {
-                    rdSeed = seed;
-                }
-                checkKeyAndSeed();
             }
+            #endregion
+
             /// <summary>
             /// function checks that the generated key and seed are within valid bounds of ascii
             /// </summary>
             private static void checkKeyAndSeed()
             {
                 const int MaxAscii = 127; // last valid number for ascii table
-                for (int index = 0; index < rdKey.Length; index++)
+                for (int index = 0; index < key.Length; index++)
                 {
-                    if (rdKey[index] > MaxAscii)
+                    if (key[index] > MaxAscii)
                     {
-                        rdKey[index] /= 2;
+                        key[index] /= 2;
                     }
                 }
-                for (int index = 0; index < rdSeed.Length; index++)
+                for (int index = 0; index < seed.Length; index++)
                 {
-                    if (rdSeed[index] > MaxAscii)
+                    if (seed[index] > MaxAscii)
                     {
-                        rdSeed[index] /= 2;
+                        seed[index] /= 2;
                     }
-                }
-            }
-            /// <summary>
-            /// function intializes the seed to run the encryption algo
-            /// </summary>
-            /// <param name="provider">class to generate the seed</param>
-            private static void rdGenerateSeed(RijndaelManaged provider)
-            {
-                if (rdSeed == null)
-                {
-                    provider.GenerateKey();
-                    rdSeed = provider.IV;
                 }
             }
             /// <summary>
@@ -266,23 +252,12 @@ namespace Networking_Encryption
                 {
                     using (RijndaelManaged rijndael = new RijndaelManaged())
                     {
-                        if (seed != "")
-                        {
-                            byte[] key = new byte[32];
-                            byte[] algoSeed = new byte[16];
-                            makeKeyAndSeed(seed, ref key, ref algoSeed);
-                            rdGenerateKeys(rijndael, key, algoSeed);
-                        }
-                        else
-                        {
-                            rdGenerateKeys(rijndael);
-                        }
-                        if (rdSeed == null || rdKey == null)
+                        if (RijdaelEncryption.seed == null || key == null)
                         {
                             throw new NullReferenceException(" one of keys is null");
                         }
                         //create encryptor & streams
-                        using (ICryptoTransform rdTransfrm = rijndael.CreateEncryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
+                        using (ICryptoTransform rdTransfrm = rijndael.CreateEncryptor((byte[])key.Clone(), (byte[])RijdaelEncryption.seed.Clone()))
                         {
                             using (CryptoStream cryptoStrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Write))
                             {
@@ -296,7 +271,6 @@ namespace Networking_Encryption
                 }
                 string encryptedStr = "";
                 encryptedStr += Convert.ToBase64String(encryptedBytes); // encrypted Str
-                rdKey = rdSeed = null;
                 return encryptedStr;
             }
             /// <summary>
@@ -313,12 +287,12 @@ namespace Networking_Encryption
                 {
                     using (MemoryStream memStrm = new MemoryStream(encrypStrAsBytes))
                     {
-                        if (rdSeed == null || rdKey == null)
+                        if (seed == null || key == null)
                         {
                             throw new NullReferenceException("saved key or iv are  is set to null");
                         }
                         //create decryptor & stream obj
-                        using (ICryptoTransform rdTransfrm = rijndael.CreateDecryptor((byte[])rdKey.Clone(), (byte[])rdSeed.Clone()))
+                        using (ICryptoTransform rdTransfrm = rijndael.CreateDecryptor((byte[])key.Clone(), (byte[])seed.Clone()))
                         {
                             using (CryptoStream cryptostrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Read))
                             {
@@ -328,7 +302,7 @@ namespace Networking_Encryption
                         }
                     }
                 }
-                rdKey = rdSeed = null;
+                key = seed = null;
                 return Encoding.ASCII.GetString(orginalText);
             }
             /// <summary>
@@ -441,6 +415,11 @@ namespace Networking_Encryption
                 temp += num.ToString();
                 return temp;
             }
+
+            public void flushKeys()
+            {
+                seed = key = null;
+            }
         }
         #endregion
 
@@ -485,15 +464,68 @@ namespace Networking_Encryption
                 using (RijndaelManaged provider = new RijndaelManaged())
                 {
                     RijdaelEncryption rij = new RijdaelEncryption();
-                    
+                    rij.genKey(provider);
+
                     if (seed == "")
                     {
+                        rij.genSeed(provider);
                         str = rij.StringEncrypt(str);
                     }
                     else
                     {
+                        keys = new Pair();
+                        keys.Mode = EncryptionMode.RijDanael;
+                        try
+                        {
+                            keys.setKey(seed);
+                        }
+                        catch (Exception exception)
+                        {
+                            if (exception is FormatException)
+                            {
+                                //do nothing the encryption will generate a random one later
+                            }
+                            else if (exception is ArgumentException)
+                            {
+                                int seedLen = seed.Length;
+                                if (seedLen == 1)
+                                {
+                                    seed = "00" + seed;
+                                    for (int count = 0; count < 4; count++)
+                                    {
+                                        seed += seed;
+                                    }
+                                    keys.setSeed(seed);
+                                }
+                                else if (seedLen == 2)
+                                {
+                                    seed = "0" + seed;
+                                    for (int count = 0; count < 4; count++)
+                                    {
+                                        seed += seed;
+                                    }
+                                    keys.setSeed(seed);
+                                } // all other seed lens let the encryption create an random one
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        rij.Seed = keys.Seed;
                         str = rij.StringEncrypt(str, seed);
                     }
+                    if (keys == null)
+                    {
+                        keys = new Pair(rij.Key, rij.Seed, EncryptionMode.RijDanael);
+                    }
+                    else
+                    {
+                        keys.setKey(rij.Key);
+                        keys.setSeed(rij.Seed);
+                        keys.Mode = EncryptionMode.RijDanael;
+                    }
+                    rij.flushKeys();
                 }
             }
             return str;
@@ -512,9 +544,15 @@ namespace Networking_Encryption
             string decryptedObj = "";
             if (!FileExtFuncts.checkHasExtention(obj))
             {
+                if (keys.Mode != EncryptionMode.RijDanael)
+                {
+                    throw new ArgumentException();
+                }
                 using (RijndaelManaged provider = new RijndaelManaged())
                 {
                     RijdaelEncryption rij = new RijdaelEncryption();
+                    rij.Key = keys.Key;
+                    rij.Seed = keys.Seed;
                     int len = parseStrSize(ref obj);
                     decryptedObj = rij.decryptString(obj);
                     decryptedObj = decryptedObj.Substring(0, len);
@@ -550,6 +588,46 @@ namespace Networking_Encryption
                     }
                     else
                     {
+                        keys = new Pair();
+                        keys.Mode = EncryptionMode.Des;
+                        try
+                        {
+                            keys.setKey(seed);
+                        }
+                        catch (Exception exception)
+                        {
+                            if (exception is FormatException)
+                            {
+                                //do nothing the encryption will generate a random one later
+                            }
+                            else if (exception is ArgumentException)
+                            {
+                                int seedLen = seed.Length;
+                                if (seedLen == 1)
+                                {
+                                    seed = "00" + seed;
+                                    for (int count = 0; count < 3; count++)
+                                    {
+                                        seed += seed;
+                                    }
+                                    keys.setSeed(seed);
+                                }
+                                else if (seedLen == 2)
+                                {
+                                    seed = "0" + seed;
+                                    for (int count = 0; count < 3; count++)
+                                    {
+                                        seed += seed;
+                                    }
+                                    keys.setSeed(seed);
+                                } // all other seed lens let the encryption create an random one
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
+                        des.Seed = keys.Seed;
                         des.TextFileEncrypt(readFile(readLocation), SaveLocation);
                     }
                     keys = new Pair(des.Key, des.Seed, EncryptionMode.Des);
@@ -601,8 +679,10 @@ namespace Networking_Encryption
                                     byte[] fileTwoBytes = binReaderTwo.ReadBytes(fileLenTwo);
                                     if (fileOneBytes.Length == fileTwoBytes.Length)
                                     {
-                                        while (pos < fileOneBytes.Length && fileTwoBytes[pos] == fileTwoBytes[pos])
+                                        bool equal = true;
+                                        while (pos < fileOneBytes.Length && fileTwoBytes[pos] == fileTwoBytes[pos] && equal == true)
                                         {
+                                            equal = checkBits(fileOneBytes[pos], fileTwoBytes[pos]);
                                             pos++;
                                         }
                                         if (pos == fileOneBytes.Length && pos == fileTwoBytes.Length)
@@ -618,6 +698,30 @@ namespace Networking_Encryption
             }
             return areEqual;
         }
+
+        private bool checkBits(byte byteOne, byte byteTwo)
+        {
+            bool equal = false;
+            int pos = 0;
+            string one = "";
+            string two = "";
+            int temp = 0;
+            while (pos < 8)
+            {
+                temp = (byteOne >> pos) & 0x1;
+                one += temp == 1 ? temp.ToString() : "0";
+                temp = (byteTwo >> pos) & 0x1;
+                two += temp == 1 ? temp.ToString() : "0";
+                pos++;
+            }
+            if (one == two)
+            {
+                equal = true;
+            }
+
+            return equal;
+        }
+
         /// <summary>
         /// reads in a given file
         /// <para>returns data inside the file</para>

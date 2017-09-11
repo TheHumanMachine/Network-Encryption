@@ -17,7 +17,9 @@ namespace Networking_Encryption
     {
         static void Main(string[] args)
         {
-
+            Pair test = new Pair();
+            test.Mode = EncryptionMode.RijDanael;
+            test.setKey(string.Join("", Enumerable.Repeat((byte)55, 10).ToArray()));
         }
     }
 }

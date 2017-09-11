@@ -12,7 +12,7 @@ namespace Networking_Encryption
     public class Pair
     {
         //class constants
-        private const int RijdaelKeySize = 48;
+        private const int RijdaelKeySize = 32;
         private const int RijdaelSeedSize = 16;
         private const int DesKeySize = 24;
         private const int DesSeedSize = 8;
@@ -191,15 +191,16 @@ namespace Networking_Encryption
                     string temp = unparsedStr.Substring(strIndex);
                     temp = temp.Length == 1 ? "00" + temp : "0" + temp;
                     tempArray[index] = Convert.ToInt32(temp);
+                    break;
                 }
                 if (strIndex >= strLen && strIndex < validSize)
                 {
-                    throw new FormatException("given string is of invalid size");
+                    throw new ArgumentOutOfRangeException("given string is of invalid size");
                 }
             }
             if (!checkIsValidByte(tempArray))
             {
-                throw new ArgumentException("contains numbers too large or too small to be a byte");
+                throw new FormatException("contains numbers too large or too small to be a byte");
             }
             if (!checkSize(tempArray))
             {

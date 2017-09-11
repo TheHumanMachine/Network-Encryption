@@ -11,7 +11,7 @@ namespace Networking_Encryption.Tests
     [TestClass()]
     public class PairTests
     {
-        const int RijdaelKeySize = 48;
+        const int RijdaelKeySize = 32;
         const int RijdaelSeedSize = 16;
         const int DesKeySize = 24;
         const int DesSeedSize = 8;
@@ -95,11 +95,11 @@ namespace Networking_Encryption.Tests
             Assert.ThrowsException<KeyNotFoundException>(() => test.setKey(string.Join("", Enumerable.Repeat((byte)55, RijdaelKeySize).ToArray())));
         }
         [TestMethod()]
-        public void setKeyStringArgumentExceptionTest()
+        public void setKeyStringFormatExceptionTest()
         {
             Pair test = new Pair();
             test.Mode = EncryptionMode.RijDanael;
-            Assert.ThrowsException<ArgumentException>(() => test.setKey(string.Join("", Enumerable.Repeat((byte)55, 10).ToArray())));
+            Assert.ThrowsException<FormatException>(() => test.setKey(string.Join("", Enumerable.Repeat((byte)55, 10).ToArray())));
         }
         [TestMethod()]
         public void setSeedByteTest()
