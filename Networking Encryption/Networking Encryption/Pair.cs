@@ -14,15 +14,23 @@ namespace Networking_Encryption
         //class constants
         private const int RijdaelKeySize = 32;
         private const int RijdaelSeedSize = 16;
-        private const int DesKeySize = 24;
-        private const int DesSeedSize = 8;
+        private const int AesKeySize = 32;
+        private const int AesSeedSize = 16;
+        //private const int AesKeySize = 32;
+        //private const int AesSeedSize = 16;
 
         // class attributes
         private byte[] key;
         private byte[] seed;
         private EncryptionMode mode;
+        private int byteLen;
 
         #region get/set property functions
+        public int Length
+        {
+            get { return byteLen; }
+            set { byteLen = value; }
+        }
         public byte[] Key
         {
             get { return key; }
@@ -47,6 +55,7 @@ namespace Networking_Encryption
             key = null;
             seed = null;
             mode = EncryptionMode.Null;
+            byteLen = 0;
         }
         /// <summary>
         /// intilizes the class to specs of the given EncryptionMode
@@ -54,9 +63,10 @@ namespace Networking_Encryption
         /// <param name="newKey"> key to set</param>
         /// <param name="newSeed">seed to set</param>
         /// <param name="newMode">type of encryption to be used for</param>
-        public Pair(byte[] newKey, byte[] newSeed, EncryptionMode newMode)
+        public Pair(byte[] newKey, byte[] newSeed, EncryptionMode newMode, int len)
         {
             mode = newMode;
+            byteLen = len;
             setKey(newKey);
             setSeed(newSeed);
         }
@@ -65,10 +75,12 @@ namespace Networking_Encryption
         /// </summary>
         /// <param name="newKey"> key to set</param>
         /// <param name="newSeed">seed to set</param>
+        /// <param name="len">length of the encrypted obj</param>
         /// <param name="newMode">type of encryption to be used for</param>
-        public Pair(string newKey, string newSeed, EncryptionMode newMode)
+        public Pair(string newKey, string newSeed, EncryptionMode newMode,int len)
         {
             mode = newMode;
+            byteLen = len;
             setKey(newKey);
             setSeed(newSeed);
         }
@@ -86,9 +98,9 @@ namespace Networking_Encryption
             {
                 throw new KeyNotFoundException(" mode is set to null");
             }
-            else if (mode == EncryptionMode.Des)
+            else if (mode == EncryptionMode.Aes)
             {
-                validSize = DesKeySize;
+                validSize = AesKeySize;
             }
             else
             {
@@ -110,9 +122,9 @@ namespace Networking_Encryption
             {
                 throw new KeyNotFoundException(" mode is set to null");
             }
-            else if (mode == EncryptionMode.Des)
+            else if (mode == EncryptionMode.Aes)
             {
-                setKey(parseString(newKey,DesKeySize));
+                setKey(parseString(newKey,AesKeySize));
             }
             else
             {
@@ -130,9 +142,9 @@ namespace Networking_Encryption
             {
                 throw new KeyNotFoundException(" mode is set to null");
             }
-            else if (mode == EncryptionMode.Des)
+            else if (mode == EncryptionMode.Aes)
             {
-                validSize = DesSeedSize;
+                validSize = AesSeedSize;
             }
             else
             {
@@ -154,9 +166,9 @@ namespace Networking_Encryption
             {
                 throw new KeyNotFoundException(" mode is set to null");
             }
-            else if (mode == EncryptionMode.Des)
+            else if (mode == EncryptionMode.Aes)
             {
-                setSeed(parseString(newSeed, DesSeedSize));
+                setSeed(parseString(newSeed, AesSeedSize));
             }
             else
             {
@@ -221,11 +233,11 @@ namespace Networking_Encryption
             int validSize = 0;
             if (isKey)
             {
-                validSize = type == EncryptionMode.Des ? DesKeySize : RijdaelKeySize;
+                validSize = type == EncryptionMode.Aes ? AesKeySize : RijdaelKeySize;
             }
             else
             {
-                validSize = type == EncryptionMode.Des ? DesSeedSize : RijdaelSeedSize;
+                validSize = type == EncryptionMode.Aes ? AesSeedSize : RijdaelSeedSize;
             }
             int strLen = unparsedStr.Length;
             byte[] validArray = new byte[validSize];

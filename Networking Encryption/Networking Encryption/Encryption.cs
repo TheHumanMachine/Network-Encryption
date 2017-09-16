@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * Build: 0.5.3
- * Date: 7/13/17
- * Code Metrics:
- * Network Encryption:77    90  1   17  222
+ * implement aes for encryption on any type of file
  */
 namespace Networking_Encryption
 {
-    public enum EncryptionMode { Null, RijDanael, Des };
+    public enum EncryptionMode { Null, RijDanael, Aes };
     /// <summary>
     /// class encrypts and decrypts given data
     /// </summary>
@@ -78,9 +75,9 @@ namespace Networking_Encryption
             /// <param name="data">information to encrypt</param>
             /// <param name="saveLocation">path to save the data</param>
             /// <param name="seed">place to start the algo from</param>
-            public void TextFileEncrypt(string data, string saveLocation)
+            public void TextFileEncrypt(byte[] data, string saveLocation)
             {
-                byte[] encodedData = Encoding.Unicode.GetBytes(data);
+                byte[] encodedData = data;//Encoding.Unicode.GetBytes(data);
                 using (FileStream fileStrm = new FileStream(saveLocation, FileMode.Create, FileAccess.Write))
                 {
                     GenKey();
@@ -141,13 +138,13 @@ namespace Networking_Encryption
             }
             /// <summary>
             /// functions decrypts a given path
-            /// <para> returns a decrypted string</para>
+            /// <para> returns a decrypted byte[]</para>
             /// </summary>
             /// <param name="path">name of the file</param>
-            /// <returns>returns a decrypted string</returns>
-            public string decryptFile(String path)
+            /// <returns>returns a decrypted byte[]</returns>
+            public byte[] decryptFile(String path)
             {
-                string decrypted = "";
+                byte[] decryptedBytes = null;
                 // Create file stream to read encrypted file back.
                 using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
@@ -156,14 +153,23 @@ namespace Networking_Encryption
                     {
                         using (CryptoStream cryptoStream = new CryptoStream(fileStream, transform, CryptoStreamMode.Read))
                         {
-                            using (StreamReader strmDec = new StreamReader(cryptoStream, new UnicodeEncoding()))
+                            List<byte> holder = new List<byte>();
+                            int temp = cryptoStream.ReadByte();
+                            while (temp != -1)
                             {
-                                decrypted = strmDec.ReadToEnd();
+                                holder.Add((byte)temp);
+                                temp = cryptoStream.ReadByte();
+                            }
+                            cryptoStream.Flush();
+                            decryptedBytes = new byte[holder.Count];
+                            for (int index = 0; index < decryptedBytes.Length; index++)
+                            {
+                                decryptedBytes[index] = holder[index];
                             }
                         }
                     }
                 }
-                return decrypted;
+                return decryptedBytes;
             }
         }
         #endregion
@@ -423,6 +429,106 @@ namespace Networking_Encryption
         }
         #endregion
 
+        #region Aes Encryption Class
+        class AesEncryption
+        {
+            //class consts
+            private const int AesKeySize = 32;
+            private const int AesSeedSize = 16;
+
+            private byte[] key = null;
+            private byte[] seed = null;
+
+            #region Get/Set Functs
+            public byte[] Key
+            {
+                get { return key; }
+                set { key = value; }
+            }
+            public byte[] Seed
+            {
+                get { return seed; }
+                set { seed = value; }
+            }
+            #endregion
+            private void GenKey()
+            {
+                if (key == null)
+                {
+                    key = new byte[AesKeySize];
+                    using (RandomNumberGenerator ranGen = RandomNumberGenerator.Create())
+                    {
+                        ranGen.GetBytes(key);
+                    }
+                }
+            }
+            private void GenSeed()
+            {
+                if (seed == null)
+                {
+                    seed = new byte[AesSeedSize];
+                    using (RandomNumberGenerator ranGen = RandomNumberGenerator.Create())
+                    {
+                        ranGen.GetBytes(seed);
+                    }
+                }
+            }
+
+            public void Encrypt(string inputFile, string outputFile)
+            {
+                const int BUFFER_SIZE = 4096;//8192
+                byte[] buffer = new byte[BUFFER_SIZE];
+                GenKey();
+                GenSeed();
+                using (FileStream inputStream = File.Open(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (FileStream outputStream = File.Open(outputFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        using (Aes cryptoAlgo = Aes.Create())
+                        {
+                            using (ICryptoTransform encryptor = cryptoAlgo.CreateEncryptor(key, seed))
+                            {
+                                using (CryptoStream cryptoStream = new CryptoStream(outputStream, encryptor, CryptoStreamMode.Write))
+                                {
+                                    int count;
+                                    while ((count = inputStream.Read(buffer, 0, buffer.Length)) > 0)
+                                    {
+                                        cryptoStream.Write(buffer,0, count);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void Decrypt(string inputFile, string outputFile)
+            {
+                const int BUFFER_SIZE = 4096;
+                byte[] buffer = new byte[BUFFER_SIZE];
+                using (FileStream inputStream = File.Open(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (FileStream outputStream = File.Open(outputFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        using (Aes cryptoAlgo = Aes.Create())
+                        {
+                            using (ICryptoTransform decryptor = cryptoAlgo.CreateDecryptor(key, seed))
+                            {
+                                using (CryptoStream cryptoStream = new CryptoStream(inputStream, decryptor, CryptoStreamMode.Read))
+                                {
+                                    int count;
+                                    while ((count = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
+                                    {
+                                        outputStream.Write(buffer, 0, count);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
         #region Parse Functions
         /// <summary>
         /// functions parses the last four elements of given str
@@ -463,6 +569,7 @@ namespace Networking_Encryption
             {
                 using (RijndaelManaged provider = new RijndaelManaged())
                 {
+                    int len = str.Length;
                     RijdaelEncryption rij = new RijdaelEncryption();
                     rij.genKey(provider);
 
@@ -517,13 +624,14 @@ namespace Networking_Encryption
                     }
                     if (keys == null)
                     {
-                        keys = new Pair(rij.Key, rij.Seed, EncryptionMode.RijDanael);
+                        keys = new Pair(rij.Key, rij.Seed, EncryptionMode.RijDanael,len);
                     }
                     else
                     {
                         keys.setKey(rij.Key);
                         keys.setSeed(rij.Seed);
                         keys.Mode = EncryptionMode.RijDanael;
+                        keys.Length = len;
                     }
                     rij.flushKeys();
                 }
@@ -553,9 +661,8 @@ namespace Networking_Encryption
                     RijdaelEncryption rij = new RijdaelEncryption();
                     rij.Key = keys.Key;
                     rij.Seed = keys.Seed;
-                    int len = parseStrSize(ref obj);
                     decryptedObj = rij.decryptString(obj);
-                    decryptedObj = decryptedObj.Substring(0, len);
+                    decryptedObj = decryptedObj.Substring(0, keys.Length);
                 }
             }
             else
@@ -577,63 +684,58 @@ namespace Networking_Encryption
         public Pair Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
             Pair keys = null;
-            using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
+            int len = 0;
+            AesEncryption aes = new AesEncryption();
+            if (seed == "")
             {
+                aes.Encrypt(readLocation, SaveLocation);
+            }
+            else
+            {
+                keys = new Pair();
+                keys.Mode = EncryptionMode.Aes;
+                try
                 {
-                    DesEncryption des = new DesEncryption();
-                    des.SymetricAlgo = tdes;
-                    if (seed == "")
+                    keys.setKey(seed);
+                }
+                catch (Exception exception)
+                {
+                    if (exception is FormatException)
                     {
-                        des.TextFileEncrypt(readFile(readLocation), SaveLocation);
+                        //do nothing the encryption will generate a random one later
+                    }
+                    else if (exception is ArgumentException)
+                    {
+                        int seedLen = seed.Length;
+                        if (seedLen == 1)
+                        {
+                            seed = "00" + seed;
+                            for (int count = 0; count < 4; count++)
+                            {
+                                seed += seed;
+                            }
+                            keys.setSeed(seed);
+                        }
+                        else if (seedLen == 2)
+                        {
+                            seed = "0" + seed;
+                            for (int count = 0; count < 3; count++)
+                            {
+                                seed += seed;
+                            }
+                            keys.setSeed(seed);
+                        } // all other seed lens let the encryption create an random one
                     }
                     else
                     {
-                        keys = new Pair();
-                        keys.Mode = EncryptionMode.Des;
-                        try
-                        {
-                            keys.setKey(seed);
-                        }
-                        catch (Exception exception)
-                        {
-                            if (exception is FormatException)
-                            {
-                                //do nothing the encryption will generate a random one later
-                            }
-                            else if (exception is ArgumentException)
-                            {
-                                int seedLen = seed.Length;
-                                if (seedLen == 1)
-                                {
-                                    seed = "00" + seed;
-                                    for (int count = 0; count < 3; count++)
-                                    {
-                                        seed += seed;
-                                    }
-                                    keys.setSeed(seed);
-                                }
-                                else if (seedLen == 2)
-                                {
-                                    seed = "0" + seed;
-                                    for (int count = 0; count < 3; count++)
-                                    {
-                                        seed += seed;
-                                    }
-                                    keys.setSeed(seed);
-                                } // all other seed lens let the encryption create an random one
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                        des.Seed = keys.Seed;
-                        des.TextFileEncrypt(readFile(readLocation), SaveLocation);
+                        throw;
                     }
-                    keys = new Pair(des.Key, des.Seed, EncryptionMode.Des);
                 }
-                return keys;
+                aes.Seed = keys.Seed;
+                aes.Encrypt(readLocation, SaveLocation);
             }
+            keys = new Pair(aes.Key, aes.Seed, EncryptionMode.Aes, len);
+            return keys;
         }
         /// <summary>
         /// function  decrypts the given file using the DES encrytion class
@@ -643,18 +745,14 @@ namespace Networking_Encryption
         /// <param name="keys">the holder of decryption key and seed</param>
         public void Decrypt(string readLocation,string saveLocation,Pair keys)
         {
-            if (keys.Mode != EncryptionMode.Des)
+            if (keys.Mode != EncryptionMode.Aes)
             {
                 throw new ArgumentException("wrong type of key");
-            }
-            using (TripleDESCryptoServiceProvider tdes = new TripleDESCryptoServiceProvider())
-            {
-                DesEncryption des = new DesEncryption();
-                des.SymetricAlgo = tdes;
-                des.Key = keys.Key;
-                des.Seed = keys.Seed;
-                writeFile(des.decryptFile(readLocation), saveLocation);
-            }
+            } 
+            AesEncryption aes = new AesEncryption();
+            aes.Key = keys.Key;
+            aes.Seed = keys.Seed;
+            aes.Decrypt(readLocation, saveLocation);
         }
         public bool compareFile(string fileName,string SecondFileName)
         {
@@ -727,8 +825,9 @@ namespace Networking_Encryption
         /// <para>returns data inside the file</para>
         /// </summary>
         /// <param name="path">name of the file</param>
+        /// <param name="len"> read file length</param>
         /// <returns>data of the file in the form of  string</returns>
-        private string readFile(string path)
+        private string readFile(string path,ref int len)
         {
             string data = "";
             using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -736,21 +835,47 @@ namespace Networking_Encryption
                 using (StreamReader strmReader = new StreamReader(fileStrm))
                 {
                     data = strmReader.ReadToEnd();
+                    len = data.Length;
                 }
             }
             return data;
+        }
+        /// <summary>
+        /// reads in a given file
+        /// <para>returns data inside the file</para>
+        /// </summary>
+        /// <param name="path">name of the file</param>
+        /// <param name="len"> read file length</param>
+        /// <returns>data of the file in the form of  string</returns>
+        private byte[] readFile(string path, ref int len, int a = 0)
+        {
+            byte[] fileBytes = null;
+            using (FileStream fStrm = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (BinaryReader binReader = new BinaryReader(fStrm))
+                {
+                    len = Convert.ToInt32(binReader.BaseStream.Length);
+                    fileBytes = binReader.ReadBytes(len);
+                }
+            }
+            return fileBytes;
         }
         /// <summary>
         /// function writes given data to the given file
         /// </summary>
         /// <param name="data">data to write</param>
         /// <param name="path">file to write to</param>
-        private void writeFile(string data, string path)
+        /// <param name="len"> length of the original file</param>
+        private void writeFile(byte[] data, string path,int len)
         {
             using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Write))
             {
                 using (StreamWriter strmWrtr = new StreamWriter(fileStrm))
                 {
+                    if (data.Length == len)
+                    {
+
+                    }
                     strmWrtr.Write(data);
                 }
             }

@@ -77,7 +77,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void EncryptTxtFileSameSeedTest()
@@ -105,7 +105,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void EncryptPdfSameSeedTest()
@@ -133,7 +133,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void EncryptImgPngSameSeedTest()
@@ -161,7 +161,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void EncryptImgJpegSameSeedTest()
@@ -189,7 +189,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveDestination);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveDestination));
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void EncryptImgGifSameSeedTest()
@@ -234,13 +234,13 @@ namespace Networking_Encryption.Tests
             string cipherText2 = encryptor2.EncryptStr(word,ref keyTwo, seed);
             Assert.AreNotEqual(word, cipherText, "Test: 1");
             Assert.IsTrue(cipherText.Count() > word.Count(), "Test: 2");
-            Assert.AreEqual(cipherText, cipherText2, "Test: 3");
+            Assert.AreNotEqual(cipherText, cipherText2, "Test: 3");
             string newText = encryptor1.Decrypt(cipherText, keyOne);
             string newText2 = encryptor2.Decrypt(cipherText2, keyTwo);
             Assert.AreEqual(word, newText, "test 4");
             Assert.AreEqual(word, newText2, "test 5");
             Assert.AreEqual(newText, newText2, "test 6");
-            checkSameSeed(keyOne, keyTwo);
+            checkSameSeed(keyOne, keyTwo,EncryptionMode.RijDanael);
         }
         [TestMethod()]
         public void DecryptTxtFileTest()
@@ -252,7 +252,7 @@ namespace Networking_Encryption.Tests
             Pair keys = encryptor.Encrypt(fileToEncrypt, saveEncryption);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
             encryptor.Decrypt(saveEncryption, saveDecryption, keys);
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt, saveDecryption), "test 2");
             Assert.IsFalse(encryptor.compareFile(saveDecryption, saveEncryption), "test 3");
@@ -273,7 +273,7 @@ namespace Networking_Encryption.Tests
             Pair keyTwo = encryptor.Encrypt(fileToEncrypt2, saveEncryption2, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt2, saveEncryption2), "test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, fileToEncrypt2), "test 3");
-            Assert.IsTrue(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
+            Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
             encryptor.Decrypt(saveEncryption1,saveDecryption1, keyOne);
             encryptor.Decrypt(saveEncryption2, saveDecryption2, keyTwo);
             Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveDecryption2), "test 5");
@@ -294,7 +294,7 @@ namespace Networking_Encryption.Tests
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt, savedecryption), "test 2");
             Assert.IsFalse(encryptor.compareFile(saveEncryption, savedecryption), "test 3");
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void DecryptPdfSameSeedTest()
@@ -312,7 +312,7 @@ namespace Networking_Encryption.Tests
             Pair keyTwo = encryptor.Encrypt(fileToEncrypt2, saveEncryption2, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt2, saveEncryption2), "test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, fileToEncrypt2), "test 3");
-            Assert.IsTrue(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
+            Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
             encryptor.Decrypt(saveEncryption1, saveDecryption1, keyOne);
             encryptor.Decrypt(saveEncryption2, saveDecryption2, keyTwo);
             Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveDecryption2), "test 5");
@@ -333,7 +333,7 @@ namespace Networking_Encryption.Tests
             Assert.IsFalse(encryptor.compareFile(saveDecryption,saveEncryption),"test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt, saveDecryption), "test 3");
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void DecryptImgPngSameSeedTest()
@@ -351,7 +351,7 @@ namespace Networking_Encryption.Tests
             Pair keyTwo = encryptor.Encrypt(fileToEncrypt2, saveEncryption2, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt2, saveEncryption2), "test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, fileToEncrypt2), "test 3");
-            Assert.IsTrue(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
+            Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
             encryptor.Decrypt(saveEncryption1, saveDecryption1, keyOne);
             encryptor.Decrypt(saveEncryption2, saveDecryption2, keyTwo);
             Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveDecryption2), "test 5");
@@ -370,7 +370,7 @@ namespace Networking_Encryption.Tests
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt, saveEncryption),"test 1");
             Assert.IsFalse(encryptor.compareFile(saveEncryption, saveDecryption), "test 2");
             Assert.IsTrue(encryptor.compareFile(saveDecryption, fileToEncrypt), "test 3");
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
             checkPairNotNull(keys);
         }
         [TestMethod()]
@@ -389,7 +389,7 @@ namespace Networking_Encryption.Tests
             Pair keyTwo = encryptor.Encrypt(fileToEncrypt2, saveEncryption2, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt2, saveEncryption2), "test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, fileToEncrypt2), "test 3");
-            Assert.IsTrue(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
+            Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
             encryptor.Decrypt(saveEncryption1, saveDecryption1, keyOne);
             encryptor.Decrypt(saveEncryption2, saveDecryption2, keyTwo);
             Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveDecryption2), "test 5");
@@ -409,7 +409,7 @@ namespace Networking_Encryption.Tests
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt, saveDecryption), "test 2");
             Assert.IsFalse(encryptor.compareFile(saveDecryption, saveEncryption), "test 3");
             checkPairNotNull(keys);
-            Assert.AreEqual(EncryptionMode.Des, keys.Mode);
+            Assert.AreEqual(EncryptionMode.Aes, keys.Mode);
         }
         [TestMethod()]
         public void DecryptImgGifSameSeedTest()
@@ -427,7 +427,7 @@ namespace Networking_Encryption.Tests
             Pair keyTwo = encryptor.Encrypt(fileToEncrypt2, saveEncryption2, seed);
             Assert.IsFalse(encryptor.compareFile(fileToEncrypt2, saveEncryption2), "test 2");
             Assert.IsTrue(encryptor.compareFile(fileToEncrypt1, fileToEncrypt2), "test 3");
-            Assert.IsTrue(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
+            Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveEncryption2), "test 4");
             encryptor.Decrypt(saveEncryption1, saveDecryption1, keyOne);
             encryptor.Decrypt(saveEncryption2, saveDecryption2, keyTwo);
             Assert.IsFalse(encryptor.compareFile(saveEncryption1, saveDecryption2), "test 5");
@@ -966,7 +966,7 @@ namespace Networking_Encryption.Tests
         /// </summary>
         /// <param name="keyOne">first pair to check</param>
         /// <param name="keyTwo">second pair to check</param>
-        static void checkSameSeed(Pair keyOne, Pair keyTwo,EncryptionMode Mode = EncryptionMode.Des)
+        static void checkSameSeed(Pair keyOne, Pair keyTwo,EncryptionMode Mode = EncryptionMode.Aes)
         {
             checkPairNotNull(keyOne);
             checkPairNotNull(keyTwo);
@@ -980,7 +980,7 @@ namespace Networking_Encryption.Tests
         /// </summary>
         /// <param name="keyOne">first pair to check</param>
         /// <param name="keyTwo">second pair to check</param>
-        static void checkDifSeed(Pair keyOne, Pair keyTwo,EncryptionMode Mode = EncryptionMode.Des)
+        static void checkDifSeed(Pair keyOne, Pair keyTwo,EncryptionMode Mode = EncryptionMode.Aes)
         {
             checkPairNotNull(keyOne);
             checkPairNotNull(keyTwo);

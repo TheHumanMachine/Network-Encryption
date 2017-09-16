@@ -13,56 +13,60 @@ namespace Networking_Encryption.Tests
     {
         const int RijdaelKeySize = 32;
         const int RijdaelSeedSize = 16;
-        const int DesKeySize = 24;
-        const int DesSeedSize = 8;
+        const int AesKeySize = 32;
+        const int AesSeedSize = 16;
 
         [TestMethod()]
         public void PairByteCTOR_ForDes()
         {
-            byte[] key = Enumerable.Repeat((byte)55,DesKeySize).ToArray();
-            byte[] seed = Enumerable.Repeat((byte)60, DesSeedSize).ToArray();
-            Pair test = new Pair(key, seed, EncryptionMode.Des);
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            byte[] key = Enumerable.Repeat((byte)55,AesKeySize).ToArray();
+            byte[] seed = Enumerable.Repeat((byte)60, AesSeedSize).ToArray();
+            Pair test = new Pair(key, seed, EncryptionMode.Aes, 0);
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Seed));
+            Assert.AreEqual(0, test.Length);
         }
         [TestMethod()]
         public void PairByteCTOR_ForRijdael()
         {
             byte[] key = Enumerable.Repeat((byte)55, RijdaelKeySize).ToArray();
             byte[] seed = Enumerable.Repeat((byte)60, RijdaelSeedSize).ToArray();
-            Pair test = new Pair(key, seed, EncryptionMode.RijDanael);
+            Pair test = new Pair(key, seed, EncryptionMode.RijDanael, 0);
             Assert.AreEqual(EncryptionMode.RijDanael, test.Mode);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Seed));
+            Assert.AreEqual(0, test.Length);
         }
         [TestMethod()]
         public void PairStringCTOR_ForDes()
         {
-            string key = string.Join("", Enumerable.Repeat("123", DesKeySize).ToArray());
-            string seed = string.Join("", Enumerable.Repeat("136", DesSeedSize).ToArray());
-            Pair test = new Pair(key, seed, EncryptionMode.Des);
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            string key = string.Join("", Enumerable.Repeat("123", AesKeySize).ToArray());
+            string seed = string.Join("", Enumerable.Repeat("136", AesSeedSize).ToArray());
+            Pair test = new Pair(key, seed, EncryptionMode.Aes, 0);
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Seed));
+            Assert.AreEqual(0, test.Length);
         }
         [TestMethod()]
         public void PairStringCTOR_ForRijdael()
         {
             string key = string.Join("", Enumerable.Repeat((byte)125, RijdaelKeySize).ToArray());
             string seed = string.Join("", Enumerable.Repeat((byte)135, RijdaelSeedSize).ToArray());
-            Pair test = new Pair(key, seed, EncryptionMode.RijDanael);
+            Pair test = new Pair(key, seed, EncryptionMode.RijDanael, 0);
             Assert.AreEqual(EncryptionMode.RijDanael, test.Mode);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Seed));
+            Assert.AreEqual(0, test.Length);
         }
         [TestMethod()]
         public void setKeyByteTest()
         {
             Pair test = new Pair();
-            byte[] key = Enumerable.Repeat((byte)55, DesKeySize).ToArray();
-            test.Mode = EncryptionMode.Des;
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            byte[] key = Enumerable.Repeat((byte)55, AesKeySize).ToArray();
+            test.Mode = EncryptionMode.Aes;
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             test.setKey(key);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
         }
@@ -83,8 +87,8 @@ namespace Networking_Encryption.Tests
         {
             Pair test = new Pair();
             string key = string.Join("", Enumerable.Repeat((byte)55, RijdaelKeySize).ToArray());
-            test.Mode = EncryptionMode.Des;
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            test.Mode = EncryptionMode.Aes;
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             test.setKey(key);
             Assert.AreEqual(string.Join("", key), string.Join("", test.Key));
         }
@@ -105,9 +109,9 @@ namespace Networking_Encryption.Tests
         public void setSeedByteTest()
         {
             Pair test = new Pair();
-            byte[] seed = Enumerable.Repeat((byte)55, DesSeedSize).ToArray();
-            test.Mode = EncryptionMode.Des;
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            byte[] seed = Enumerable.Repeat((byte)55, AesSeedSize).ToArray();
+            test.Mode = EncryptionMode.Aes;
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             test.setSeed(seed);
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Seed));
         }
@@ -115,7 +119,7 @@ namespace Networking_Encryption.Tests
         public void setSeedByteNullExceptionTest()
         {
             Pair test = new Pair();
-            Assert.ThrowsException<KeyNotFoundException>(() => test.setSeed(Enumerable.Repeat((byte)55, DesSeedSize).ToArray()));
+            Assert.ThrowsException<KeyNotFoundException>(() => test.setSeed(Enumerable.Repeat((byte)55, AesSeedSize).ToArray()));
         }
         [TestMethod()]
         public void setSeedByteArgumentExceptionTest()
@@ -127,9 +131,9 @@ namespace Networking_Encryption.Tests
         public void setSeedStringTest()
         {
             Pair test = new Pair();
-            string seed = string.Join("", Enumerable.Repeat((byte)55, DesSeedSize).ToArray());
-            test.Mode = EncryptionMode.Des;
-            Assert.AreEqual(EncryptionMode.Des, test.Mode);
+            string seed = string.Join("", Enumerable.Repeat((byte)55, AesSeedSize).ToArray());
+            test.Mode = EncryptionMode.Aes;
+            Assert.AreEqual(EncryptionMode.Aes, test.Mode);
             test.setSeed(seed);
             Assert.AreEqual(string.Join("", seed), string.Join("", test.Key));
         }
@@ -137,7 +141,7 @@ namespace Networking_Encryption.Tests
         public void setSeedStringNullExceptionTest()
         {
             Pair test = new Pair();
-            Assert.ThrowsException<KeyNotFoundException>(() => test.setKey(string.Join("", Enumerable.Repeat((byte)155, DesSeedSize).ToArray())));
+            Assert.ThrowsException<KeyNotFoundException>(() => test.setKey(string.Join("", Enumerable.Repeat((byte)155, AesSeedSize).ToArray())));
         }
         [TestMethod()]
         public void setSeedStringArgumentExceptionTest()
@@ -149,13 +153,13 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void parseStringArgumentException()
         {
-            Assert.ThrowsException<ArgumentException>(() => Pair.parseString(string.Join("", Enumerable.Repeat((byte)155, 5).ToArray()),EncryptionMode.Des,false));
+            Assert.ThrowsException<ArgumentException>(() => Pair.parseString(string.Join("", Enumerable.Repeat((byte)155, 5).ToArray()),EncryptionMode.Aes,false));
         }
         [TestMethod()]
         public void parseStringDesIsKey()
         {
-            byte[] key = Enumerable.Repeat((byte)155, DesKeySize).ToArray();
-            Assert.AreEqual(string.Join("", key), string.Join("", Pair.parseString(string.Join("", key), EncryptionMode.Des, true)));
+            byte[] key = Enumerable.Repeat((byte)155, AesKeySize).ToArray();
+            Assert.AreEqual(string.Join("", key), string.Join("", Pair.parseString(string.Join("", key), EncryptionMode.Aes, true)));
         }
         [TestMethod()]
         public void parseStringRijdaelIsKey()
@@ -166,8 +170,8 @@ namespace Networking_Encryption.Tests
         [TestMethod()]
         public void parseStringDesNotKey()
         {
-            byte[] seed = Enumerable.Repeat((byte)155, DesSeedSize).ToArray();
-            Assert.AreEqual(string.Join("",seed),string.Join("", Pair.parseString(string.Join("", seed), EncryptionMode.Des, false)));
+            byte[] seed = Enumerable.Repeat((byte)155, AesSeedSize).ToArray();
+            Assert.AreEqual(string.Join("",seed),string.Join("", Pair.parseString(string.Join("", seed), EncryptionMode.Aes, false)));
         }
         [TestMethod()]
         public void parseStringRijdaelNotKey()

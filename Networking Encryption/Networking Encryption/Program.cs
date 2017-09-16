@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Security.Cryptography;
 /*
  * Build: 0.5.4
  * Date: 7/13/17
@@ -17,9 +19,7 @@ namespace Networking_Encryption
     {
         static void Main(string[] args)
         {
-            Pair test = new Pair();
-            test.Mode = EncryptionMode.RijDanael;
-            test.setKey(string.Join("", Enumerable.Repeat((byte)55, 10).ToArray()));
+
         }
     }
 }
