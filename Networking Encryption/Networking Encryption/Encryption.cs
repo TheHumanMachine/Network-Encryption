@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 /*
- * implement aes for encryption on any type of file
+ * CodeMetrics: 55  58  1   19  167
  */
 namespace Networking_Encryption
 {
@@ -18,253 +18,6 @@ namespace Networking_Encryption
         //class constants
         private const int KeyLen = 32;
         private const int SeedLen = 16;
-
-        #region Rijdael Encryption Class
-        class RijdaelEncryption
-        {
-            private static byte[] key = null;
-            private static byte[] seed = null;
-
-            #region get/set functions
-            public byte[] Key
-            {
-                get { return key; }
-                set { key = value; }
-            }
-            public byte[] Seed
-            {
-                get { return seed; }
-                set { seed = value; }
-            }
-            /// <summary>
-            /// creates a seed for the encryption
-            /// </summary>
-            /// <param name="provider">class to generate the seed</param>
-            public void genSeed(RijndaelManaged provider)
-            {
-                if (seed == null)
-                {
-                    provider.GenerateKey();
-                    seed = provider.IV;
-                }
-            }
-            /// <summary>
-            /// generates a random key
-            /// </summary>
-            /// <param name="provider"> class to intialize the key</param>
-            public void genKey(RijndaelManaged provider)
-            {
-                if (key == null)
-                {
-                    provider.KeySize = 256;
-                    provider.GenerateKey();
-                    key = provider.Key;
-                }
-            }
-            #endregion
-
-            /// <summary>
-            /// function checks that the generated key and seed are within valid bounds of ascii
-            /// </summary>
-            private static void checkKeyAndSeed()
-            {
-                const int MaxAscii = 127; // last valid number for ascii table
-                for (int index = 0; index < key.Length; index++)
-                {
-                    if (key[index] > MaxAscii)
-                    {
-                        key[index] /= 2;
-                    }
-                }
-                for (int index = 0; index < seed.Length; index++)
-                {
-                    if (seed[index] > MaxAscii)
-                    {
-                        seed[index] /= 2;
-                    }
-                }
-            }
-            /// <summary>
-            /// function Encrypts the given Str using the rijndael Class
-            /// <para/> returns an encrypted String
-            /// </summary>
-            /// <param name="strToEncrypt">string to encrypt</param>
-            /// <param name="seed"> seed to run Rijndael on</param>
-            /// <returns> returns an encrypted string</returns>
-            public string StringEncrypt(string strToEncrypt, string seed = "")
-            {
-                // encode data
-                byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
-                byte[] encryptedBytes = { };
-                string len = makeStr(strToEncrypt.Length);
-
-                //create memstream
-                using (MemoryStream memStrm = new MemoryStream(strAsBytes.Length))
-                {
-                    using (RijndaelManaged rijndael = new RijndaelManaged())
-                    {
-                        if (RijdaelEncryption.seed == null || key == null)
-                        {
-                            throw new NullReferenceException(" one of keys is null");
-                        }
-                        //create encryptor & streams
-                        using (ICryptoTransform rdTransfrm = rijndael.CreateEncryptor((byte[])key.Clone(), (byte[])RijdaelEncryption.seed.Clone()))
-                        {
-                            using (CryptoStream cryptoStrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Write))
-                            {
-                                // write encrypted Data
-                                cryptoStrm.Write(strAsBytes, 0, strAsBytes.Length);
-                                cryptoStrm.FlushFinalBlock();
-                                encryptedBytes = memStrm.ToArray();
-                            }
-                        }
-                    }
-                }
-                string encryptedStr = "";
-                encryptedStr += Convert.ToBase64String(encryptedBytes); // encrypted Str
-                return encryptedStr;
-            }
-            /// <summary>
-            /// function takes an encrypted string and Decrypts it
-            /// </summary>
-            /// <param name="encryptedStr">string to decrypt</param>
-            /// <returns>returns a decrypted string</returns>
-            public string decryptString(string encryptedStr)
-            {
-                // convert encrypted string
-                byte[] encrypStrAsBytes = Convert.FromBase64String(encryptedStr);
-                byte[] orginalText = new Byte[encrypStrAsBytes.Length];
-                using (RijndaelManaged rijndael = new RijndaelManaged())
-                {
-                    using (MemoryStream memStrm = new MemoryStream(encrypStrAsBytes))
-                    {
-                        if (seed == null || key == null)
-                        {
-                            throw new NullReferenceException("saved key or iv are  is set to null");
-                        }
-                        //create decryptor & stream obj
-                        using (ICryptoTransform rdTransfrm = rijndael.CreateDecryptor((byte[])key.Clone(), (byte[])seed.Clone()))
-                        {
-                            using (CryptoStream cryptostrm = new CryptoStream(memStrm, rdTransfrm, CryptoStreamMode.Read))
-                            {
-                                // read encryption
-                                cryptostrm.Read(orginalText, 0, orginalText.Length);
-                            }
-                        }
-                    }
-                }
-                key = seed = null;
-                return Encoding.ASCII.GetString(orginalText);
-            }
-            /// <summary>
-            /// function makes a valid seed out of the given string
-            /// </summary>
-            /// <param name="seed">string to parse</param>
-            /// <returns> a valid seed to be used for encryption</returns>
-            private byte[] makeSeed(string seed)
-            {
-                byte[] seedArray = new byte[SeedLen];
-
-                seedArray = KeyHolder.parseString(seed, false);
-
-                return seedArray;
-            }
-            /// <summary>
-            /// function parses  the key & seed to be used within string encrytion
-            /// </summary>
-            /// <param name="text"> given text to parse from</param>
-            /// <param name="key">key to be used for encryption algo</param>
-            /// <param name="seed">seed to be used within the encryption algo</param>
-            /// <returns>a substring of the left over text</returns>
-            private string makeKeyAndSeed(string text, ref byte[] key, ref byte[] seed)
-            {
-                byte[] textAsBytes = Encoding.ASCII.GetBytes(text);
-                int index = 0;
-                while (index < 48 && index < textAsBytes.Length)
-                {
-                    if (index < 32) // the size req for a valid key
-                    {
-                        key[index] = textAsBytes[index];
-                    }
-                    else // index >= 32
-                    {
-                        seed[index - 32] = textAsBytes[index];
-                    }
-                    index++;
-                }
-                while (index < 48) // make ownKey
-                {
-                    const byte lastAsciiVal = 127;
-                    byte temp = lastAsciiVal;
-                    if (index < 32) // the size req for a valid key
-                    {
-                        key[index] = temp;
-                    }
-                    else // index >= 32
-                    {
-                        seed[index - 32] = temp;
-                    }
-                    temp = temp > 0 ? temp-- : lastAsciiVal;
-                    index++;
-                }
-                return textAsBytes.Length >= 48 ? text.Substring(48, text.Length - index) : "";
-            }
-            /// <summary>
-            /// function parses the given byte[] into a valid string for the class user
-            /// </summary>
-            /// <param name="array">array to convert to String</param>
-            /// <returns></returns>
-            private string makeStr(byte[] array)
-            {
-                string retVal = "";
-                string temp = "";
-                int mod = 0;
-                for (int index = 0; index < array.Length; index++)
-                {
-                    temp = array[index].ToString();
-                    mod = temp.Length % 3;
-                    if (mod > 0)
-                    {
-                        retVal += mod == 1 ? "00" : "0";
-                    }
-                    retVal += temp;
-                }
-                return retVal;
-            }
-            /// <summary>
-            /// function parses the given int into valid str for encryption
-            /// <para/> returns the parsed num
-            /// </summary>
-            /// <param name="num"> num to parse</param>
-            /// <returns>parsed num</returns>
-            private string makeStr(int num)
-            {
-                string temp = "";
-                if (num > 9999) // last valid size to parse
-                {
-                    throw new FormatException("to large to handle");
-                }
-                if (num % 4 != 0)
-                {
-                    if (num % 4 == 3)
-                    {
-                        temp = "0";
-                    }
-                    else
-                    {
-                        temp = num % 4 == 2 ? "00" : "000";
-                    }
-                }
-                temp += num.ToString();
-                return temp;
-            }
-
-            public void flushKeys()
-            {
-                seed = key = null;
-            }
-        }
-        #endregion
 
         #region Aes Encryption Class
         class AesEncryption
@@ -288,7 +41,7 @@ namespace Networking_Encryption
                 set { seed = value; }
             }
             #endregion
-            private void GenKey()
+            public void GenKey()
             {
                 if (key == null)
                 {
@@ -299,7 +52,7 @@ namespace Networking_Encryption
                     }
                 }
             }
-            private void GenSeed()
+            public void GenSeed()
             {
                 if (seed == null)
                 {
@@ -310,7 +63,40 @@ namespace Networking_Encryption
                     }
                 }
             }
+            public void FlushKeys()
+            {
+                key = seed = null;
+            }
 
+            #region Encryption Functions
+            public string Encrypt(string strToEncrypt)
+            {
+                string encryptedStr = "";
+                byte[] strAsBytes = Encoding.ASCII.GetBytes(strToEncrypt);
+                byte[] encryptedBytes = null;
+
+                GenKey();
+                GenSeed();
+                using (MemoryStream memStrm = new MemoryStream(strAsBytes.Length))
+                {
+                    using (Aes aes = Aes.Create())
+                    {
+                        using (ICryptoTransform cryptTransfrm = aes.CreateEncryptor(key, seed))
+                        {
+                            using (CryptoStream cryptoStrm = new CryptoStream(memStrm, cryptTransfrm, CryptoStreamMode.Write))
+                            {
+                                cryptoStrm.Write(strAsBytes, 0, strAsBytes.Length);
+                                cryptoStrm.FlushFinalBlock();
+                                encryptedBytes = memStrm.ToArray();
+                            }
+                        }
+                    }
+                }
+                string len = strToEncrypt.Length.ToString("X");
+                len += "X";
+                encryptedStr += Convert.ToBase64String(encryptedBytes); // encrypted Str
+                return len + encryptedStr;
+            }
             public void Encrypt(string inputFile, string outputFile)
             {
                 const int BUFFER_SIZE = 4096;//8192
@@ -330,7 +116,7 @@ namespace Networking_Encryption
                                     int count;
                                     while ((count = inputStream.Read(buffer, 0, buffer.Length)) > 0)
                                     {
-                                        cryptoStream.Write(buffer,0, count);
+                                        cryptoStream.Write(buffer, 0, count);
                                     }
                                 }
                             }
@@ -338,7 +124,38 @@ namespace Networking_Encryption
                     }
                 }
             }
+            #endregion
 
+            #region Decryption Functions
+            public string Decrypt(string encryptedStr)
+            {
+                char temp = new char();
+                int index = 0;
+                while (temp != 'X')
+                {
+                    temp = encryptedStr[index];
+                    index++;
+                }
+                int len = int.Parse(encryptedStr.Substring(0, index - 1), System.Globalization.NumberStyles.HexNumber);
+                encryptedStr = encryptedStr.Substring(index);
+                byte[] encrypStrAsBytes = Convert.FromBase64String(encryptedStr);
+                byte[] orginalText = new Byte[encrypStrAsBytes.Length];
+                using (MemoryStream memStrm = new MemoryStream(encrypStrAsBytes))
+                {
+                    using (Aes aes = Aes.Create())
+                    {
+                        using (ICryptoTransform cryptoTransfrm = aes.CreateDecryptor(key,seed))
+                        {
+                            using (CryptoStream cryptostrm = new CryptoStream(memStrm, cryptoTransfrm, CryptoStreamMode.Read))
+                            {
+                                cryptostrm.Read(orginalText, 0, orginalText.Length);
+                            }
+                        }
+                    }
+                }
+                key = seed = null;
+                return Encoding.ASCII.GetString(orginalText).Substring(0,len);
+            }
             public void Decrypt(string inputFile, string outputFile)
             {
                 const int BUFFER_SIZE = 4096;
@@ -364,6 +181,8 @@ namespace Networking_Encryption
                     }
                 }
             }
+
+            #endregion
         }
         #endregion
 
@@ -408,26 +227,24 @@ namespace Networking_Encryption
                 using (RijndaelManaged provider = new RijndaelManaged())
                 {
                     int len = str.Length;
-                    RijdaelEncryption rij = new RijdaelEncryption();
-                    rij.genKey(provider);
+                    AesEncryption aes = new AesEncryption();
 
                     if (seed == "")
                     {
-                        rij.genSeed(provider);
-                        str = rij.StringEncrypt(str);
+                        str = aes.Encrypt(str);
                     }
                     else
                     {
                         keys = new KeyHolder();
                         try
                         {
-                            keys.setKey(seed);
+                            keys.setSeed(seed);
                         }
                         catch (Exception exception)
                         {
                             if (exception is OutOfDomainException)
                             {
-                                //do nothing the encryption will generate a random one later
+                                aes.GenSeed();
                             }
                             else if (exception is InvalidLengthException)
                             {
@@ -449,26 +266,18 @@ namespace Networking_Encryption
                                         seed += seed;
                                     }
                                     keys.setSeed(seed);
-                                } // all other seed lens let the encryption create an random one
+                                }
                             }
                             else
                             {
                                 throw;
                             }
                         }
-                        rij.Seed = keys.Seed;
-                        str = rij.StringEncrypt(str, seed);
+                        aes.Seed = keys.Seed;
+                        str = aes.Encrypt(str);
                     }
-                    if (keys == null)
-                    {
-                        keys = new KeyHolder(rij.Key, rij.Seed);
-                    }
-                    else
-                    {
-                        keys.setKey(rij.Key);
-                        keys.setSeed(rij.Seed);
-                    }
-                    rij.flushKeys();
+                    keys = new KeyHolder(aes.Key, aes.Seed);
+                    aes.FlushKeys();
                 }
             }
             return str;
@@ -487,13 +296,10 @@ namespace Networking_Encryption
             string decryptedObj = "";
             if (!FileExtFuncts.checkHasExtention(obj))
             {
-                using (RijndaelManaged provider = new RijndaelManaged())
-                {
-                    RijdaelEncryption rij = new RijdaelEncryption();
-                    rij.Key = keys.Key;
-                    rij.Seed = keys.Seed;
-                    decryptedObj = rij.decryptString(obj);
-                }
+                AesEncryption aes = new AesEncryption();
+                aes.Key = keys.Key;
+                aes.Seed = keys.Seed;
+                decryptedObj = aes.Decrypt(obj);
             }
             else
             {
