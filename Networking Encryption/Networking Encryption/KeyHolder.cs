@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 /*
- *CodeMetrics: 66   56  1   7   119 
+ *CodeMetrics: 70   33  1   5   61 
  */
 namespace Networking_Encryption
 {
