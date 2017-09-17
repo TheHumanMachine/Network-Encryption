@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FilesExtentionFuncts.cs" />
-    <Compile Include="Pair.cs" />
+    <Compile Include="KeyHolder.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerClient.cs" />
     <Compile Include="Encryption.cs" />
