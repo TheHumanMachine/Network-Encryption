@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using System.Globalization;
 /*
- * CodeMetrics: 55  58  1   19  167
+ * CodeMetrics: 57  40  1   11  123
  */
 namespace Networking_Encryption
 {
@@ -15,17 +16,15 @@ namespace Networking_Encryption
     /// </summary>
     public class Encryption
     {
-        //class constants
-        private const int KeyLen = 32;
-        private const int SeedLen = 16;
 
         #region Aes Encryption Class
         class AesEncryption
         {
-            //class consts
+            //class constants:
             private const int AesKeySize = 32;
             private const int AesSeedSize = 16;
 
+            //class atributes
             private byte[] key = null;
             private byte[] seed = null;
 
@@ -41,6 +40,11 @@ namespace Networking_Encryption
                 set { seed = value; }
             }
             #endregion
+
+            #region Key / Seed Functions
+            /// <summary>
+            /// Generates a random key for encryption
+            /// </summary>
             public void GenKey()
             {
                 if (key == null)
@@ -52,6 +56,9 @@ namespace Networking_Encryption
                     }
                 }
             }
+            /// <summary>
+            /// generates a random seed for the encryption
+            /// </summary>
             public void GenSeed()
             {
                 if (seed == null)
@@ -63,12 +70,22 @@ namespace Networking_Encryption
                     }
                 }
             }
+            /// <summary>
+            /// function eliminates the stored values of the key & seed
+            /// </summary>
             public void FlushKeys()
             {
                 key = seed = null;
             }
+            #endregion
 
             #region Encryption Functions
+            /// <summary>
+            /// Function encrypts the given string
+            /// <para>Returns an encrypted string</para>
+            /// </summary>
+            /// <param name="strToEncrypt">String to encrypt</param>
+            /// <returns>Returns an encrypted string</returns>
             public string Encrypt(string strToEncrypt)
             {
                 string encryptedStr = "";
@@ -92,33 +109,34 @@ namespace Networking_Encryption
                         }
                     }
                 }
-                string len = strToEncrypt.Length.ToString("X");
-                len += "X";
+                string len = strToEncrypt.Length.ToString("X");//converts Int to Hex
+                len += "X";//parse const
                 encryptedStr += Convert.ToBase64String(encryptedBytes); // encrypted Str
                 return len + encryptedStr;
             }
-            public void Encrypt(string inputFile, string outputFile)
+            /// <summary>
+            /// encrypts given file and saves it to a selected destination
+            /// </summary>
+            /// <param name="inputStream">file to encrypt</param>
+            /// <param name="outputStream">file to decrypt</param>
+            public void Encrypt(FileStream inputStream, FileStream outputStream)
             {
-                const int BUFFER_SIZE = 4096;//8192
-                byte[] buffer = new byte[BUFFER_SIZE];
+                const int BUFFER_SIZE = 4096;// size of block of data to read
+                byte[] buffer = new byte[BUFFER_SIZE];// array to place read data
+
+
                 GenKey();
                 GenSeed();
-                using (FileStream inputStream = File.Open(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (Aes cryptoAlgo = Aes.Create())
                 {
-                    using (FileStream outputStream = File.Open(outputFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                    using (ICryptoTransform encryptor = cryptoAlgo.CreateEncryptor(key, seed))
                     {
-                        using (Aes cryptoAlgo = Aes.Create())
+                        using (CryptoStream cryptoStream = new CryptoStream(outputStream, encryptor, CryptoStreamMode.Write))
                         {
-                            using (ICryptoTransform encryptor = cryptoAlgo.CreateEncryptor(key, seed))
+                            int count;
+                            while ((count = inputStream.Read(buffer, 0, buffer.Length)) > 0) // not end of the stream
                             {
-                                using (CryptoStream cryptoStream = new CryptoStream(outputStream, encryptor, CryptoStreamMode.Write))
-                                {
-                                    int count;
-                                    while ((count = inputStream.Read(buffer, 0, buffer.Length)) > 0)
-                                    {
-                                        cryptoStream.Write(buffer, 0, count);
-                                    }
-                                }
+                                cryptoStream.Write(buffer, 0, count);
                             }
                         }
                     }
@@ -127,24 +145,47 @@ namespace Networking_Encryption
             #endregion
 
             #region Decryption Functions
+            /// <summary>
+            /// Function decrypts a given Stream and saves it to an output stream
+            /// </summary>
+            /// <param name="inputStream">Stream to decrypt</param>
+            /// <param name="outputStream">Stream to save decryption</param>
+            public void Decrypt(FileStream inputStream, FileStream outputStream)
+            {
+                const int BUFFER_SIZE = 4096;
+                byte[] buffer = new byte[BUFFER_SIZE];
+                using (Aes cryptoAlgo = Aes.Create())
+                {
+                    using (ICryptoTransform decryptor = cryptoAlgo.CreateDecryptor(key, seed))
+                    {
+                        using (CryptoStream cryptoStream = new CryptoStream(inputStream, decryptor, CryptoStreamMode.Read))
+                        {
+                            int count;
+                            while ((count = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                outputStream.Write(buffer, 0, count);
+                            }
+                        }
+                    }
+                }
+            }
+            /// <summary>
+            /// Decrypts given string 
+            /// <para>Returns a decrypted string</para>
+            /// </summary>
+            /// <param name="encryptedStr">String to decrypt</param>
+            /// <returns>Returns a decrypted string</returns>
             public string Decrypt(string encryptedStr)
             {
-                char temp = new char();
-                int index = 0;
-                while (temp != 'X')
-                {
-                    temp = encryptedStr[index];
-                    index++;
-                }
-                int len = int.Parse(encryptedStr.Substring(0, index - 1), System.Globalization.NumberStyles.HexNumber);
-                encryptedStr = encryptedStr.Substring(index);
+                int len = GetLen(ref encryptedStr);
                 byte[] encrypStrAsBytes = Convert.FromBase64String(encryptedStr);
                 byte[] orginalText = new Byte[encrypStrAsBytes.Length];
+
                 using (MemoryStream memStrm = new MemoryStream(encrypStrAsBytes))
                 {
                     using (Aes aes = Aes.Create())
                     {
-                        using (ICryptoTransform cryptoTransfrm = aes.CreateDecryptor(key,seed))
+                        using (ICryptoTransform cryptoTransfrm = aes.CreateDecryptor(key, seed))
                         {
                             using (CryptoStream cryptostrm = new CryptoStream(memStrm, cryptoTransfrm, CryptoStreamMode.Read))
                             {
@@ -154,61 +195,27 @@ namespace Networking_Encryption
                     }
                 }
                 key = seed = null;
-                return Encoding.ASCII.GetString(orginalText).Substring(0,len);
+                return Encoding.ASCII.GetString(orginalText).Substring(0, len);
             }
-            public void Decrypt(string inputFile, string outputFile)
+            /// <summary>
+            /// Function parses the encrypted string for the length of the orginal string
+            /// </summary>
+            /// <param name="encryptedStr">String to parse from</param>
+            /// <returns>Return the length of the original string</returns>
+            private int GetLen(ref string encryptedStr)
             {
-                const int BUFFER_SIZE = 4096;
-                byte[] buffer = new byte[BUFFER_SIZE];
-                using (FileStream inputStream = File.Open(inputFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                char curr = new char();
+                int index = 0;
+                while (curr != 'X')
                 {
-                    using (FileStream outputStream = File.Open(outputFile, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        using (Aes cryptoAlgo = Aes.Create())
-                        {
-                            using (ICryptoTransform decryptor = cryptoAlgo.CreateDecryptor(key, seed))
-                            {
-                                using (CryptoStream cryptoStream = new CryptoStream(inputStream, decryptor, CryptoStreamMode.Read))
-                                {
-                                    int count;
-                                    while ((count = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
-                                    {
-                                        outputStream.Write(buffer, 0, count);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    curr = encryptedStr[index];
+                    index++;
                 }
+                int len = int.Parse(encryptedStr.Substring(0, index - 1), NumberStyles.HexNumber);
+                encryptedStr = encryptedStr.Substring(index);
+                return len;
             }
-
             #endregion
-        }
-        #endregion
-
-        #region Parse Functions
-        /// <summary>
-        /// functions parses the last four elements of given str
-        /// <para/> returns an int
-        /// </summary>
-        /// <param name="text">txt to  parse</param>
-        /// <returns>returns an int: len</returns>
-        private int parseStrSize(ref string text)
-        {
-            if (text.Length <= 4)
-            {
-                throw new FormatException("invalid text format");
-            }
-            string len = text.Substring(text.Length - 4, 4);
-            foreach (char num in len)
-            {
-                if (num < '0' || num > '9')
-                {
-                    throw new InvalidDataException("invalid char found");
-                }
-            }
-            text = text.Substring(0, text.Length - 4);
-            return Convert.ToInt32(len);
         }
         #endregion
 
@@ -218,97 +225,31 @@ namespace Networking_Encryption
         /// <para/> function returns an encrypted string
         /// </summary>
         /// <param name="str"> str to encrypt</param>
-        /// <param name="seed">the specified seed to run the encryption on</param>
+        /// <param name="keys">place to store encryption keys and Seed</param>
+        /// <param name="seed">user defined seed to run encryption on</param>
         /// <returns>returns an encrypted string ro  the name of the file where the file was encrypted</returns>
         public string EncryptStr(string str,ref KeyHolder keys, string seed = "")
         {
             if (!FileExtFuncts.checkHasExtention(str))
             {
-                using (RijndaelManaged provider = new RijndaelManaged())
-                {
-                    int len = str.Length;
-                    AesEncryption aes = new AesEncryption();
+                int len = str.Length;
+                AesEncryption aes = new AesEncryption();
 
-                    if (seed == "")
-                    {
-                        str = aes.Encrypt(str);
-                    }
-                    else
-                    {
-                        keys = new KeyHolder();
-                        try
-                        {
-                            keys.setSeed(seed);
-                        }
-                        catch (Exception exception)
-                        {
-                            if (exception is OutOfDomainException)
-                            {
-                                aes.GenSeed();
-                            }
-                            else if (exception is InvalidLengthException)
-                            {
-                                int seedLen = seed.Length;
-                                if (seedLen == 1)
-                                {
-                                    seed = "00" + seed;
-                                    for (int count = 0; count < 4; count++)
-                                    {
-                                        seed += seed;
-                                    }
-                                    keys.setSeed(seed);
-                                }
-                                else if (seedLen == 2)
-                                {
-                                    seed = "0" + seed;
-                                    for (int count = 0; count < 4; count++)
-                                    {
-                                        seed += seed;
-                                    }
-                                    keys.setSeed(seed);
-                                }
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
-                        aes.Seed = keys.Seed;
-                        str = aes.Encrypt(str);
-                    }
-                    keys = new KeyHolder(aes.Key, aes.Seed);
-                    aes.FlushKeys();
+                if (seed == "")
+                {
+                    str = aes.Encrypt(str);
                 }
+                else
+                {
+                    keys = SetKey(seed, ref aes);
+                    aes.Seed = keys.Seed;
+                    str = aes.Encrypt(str);
+                }
+                keys = new KeyHolder(aes.Key, aes.Seed);
+                aes.FlushKeys();
             }
             return str;
         }
-        #endregion
-
-        #region Decrypion Functions
-        /// <summary>
-        /// function decrypts the given obj
-        /// <para/> returns a decrypted string or the name of the decrypted file
-        /// </summary>
-        /// <param name="obj"> the obj to decrypt</param>
-        /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
-        public string Decrypt(string obj,KeyHolder keys)
-        {
-            string decryptedObj = "";
-            if (!FileExtFuncts.checkHasExtention(obj))
-            {
-                AesEncryption aes = new AesEncryption();
-                aes.Key = keys.Key;
-                aes.Seed = keys.Seed;
-                decryptedObj = aes.Decrypt(obj);
-            }
-            else
-            {
-                Decrypt(obj, obj, keys);
-            }
-            return decryptedObj;
-        }
-        #endregion
-
         /// <summary>
         /// function encrypts the given file using Des Encryptor Class
         /// <para>returns a pair that holds key seed and type of encryption used</para>
@@ -320,169 +261,215 @@ namespace Networking_Encryption
         public KeyHolder Encrypt(string readLocation, string SaveLocation, string seed = "")
         {
             KeyHolder keys = null;
-            int len = 0;
             AesEncryption aes = new AesEncryption();
             if (seed == "")
             {
-                aes.Encrypt(readLocation, SaveLocation);
+                using (FileStream inputStream = File.Open(readLocation, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (FileStream outputStream = File.Open(SaveLocation, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        aes.Encrypt(inputStream, outputStream);
+                    }
+                }
             }
             else
             {
-                keys = new KeyHolder();
-                try
-                {
-                    keys.setKey(seed);
-                }
-                catch (Exception exception)
-                {
-                    if (exception is OutOfDomainException)
-                    {
-                        //do nothing the encryption will generate a random one later
-                    }
-                    else if (exception is InvalidLengthException)
-                    {
-                        int seedLen = seed.Length;
-                        if (seedLen == 1)
-                        {
-                            seed = "00" + seed;
-                            for (int count = 0; count < 4; count++)
-                            {
-                                seed += seed;
-                            }
-                            keys.setSeed(seed);
-                        }
-                        else if (seedLen == 2)
-                        {
-                            seed = "0" + seed;
-                            for (int count = 0; count < 3; count++)
-                            {
-                                seed += seed;
-                            }
-                            keys.setSeed(seed);
-                        } // all other seed lens let the encryption create an random one
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                keys = SetKey(seed, ref aes);
                 aes.Seed = keys.Seed;
-                aes.Encrypt(readLocation, SaveLocation);
+                using (FileStream inputStream = File.Open(readLocation, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (FileStream outputStream = File.Open(SaveLocation, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        aes.Encrypt(inputStream, outputStream);
+                    }
+                }
             }
             keys = new KeyHolder(aes.Key, aes.Seed);
             return keys;
         }
         /// <summary>
-        /// function  decrypts the given file using the DES encrytion class
+        /// function does a try catch on KeyHolder.setSeed 
+        /// <para>Returns a KeyHolder obj with a seed intialized</para>
+        /// </summary>
+        /// <param name="seed">seed to set</param>
+        /// <param name="aes"> encryption obj to set encryption if OutOfDomainException is thrown </param>
+        /// <returns></returns>
+        private KeyHolder SetKey(string seed,ref AesEncryption aes)
+        {
+            KeyHolder keys = new KeyHolder();
+            try
+            {
+                keys.setSeed(seed);
+            }
+            catch (Exception exception)
+            {
+                if (exception is OutOfDomainException)
+                {
+                    aes.GenSeed();
+                }
+                else if (exception is InvalidLengthException)
+                {
+                    int seedLen = seed.Length;
+                    if (seedLen == 1)
+                    {
+                        seed = "00" + seed;
+                        for (int count = 0; count < 4; count++)
+                        {
+                            seed += seed;
+                        }
+                        keys.setSeed(seed);
+                    }
+                    else if (seedLen == 2)
+                    {
+                        seed = "0" + seed;
+                        for (int count = 0; count < 4; count++)
+                        {
+                            seed += seed;
+                        }
+                        keys.setSeed(seed);
+                    }
+                    else
+                    {
+                        char[] temp = seed.ToCharArray();
+                        seed = "";
+                        for (int index = 0; index < temp.Length; index++)
+                        {
+                            seed += "00" + temp[index];
+                        }
+                        keys.setSeed(seed);
+                    }
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return keys;
+        }
+        #endregion
+
+        #region Decrypion Functions
+        /// <summary>
+        /// Function decrypts the given string
+        /// <para> Returns a decrypted string</para>
+        /// </summary>
+        /// <param name="encryptedString"> the obj to decrypt</param>
+        /// <param name="keys"> Obj to store key and seed</param>
+        /// <returns>returns a decrypted string or the name of the decrypted file name</returns>
+        public string Decrypt(string encryptedString,KeyHolder keys)
+        {
+            string decryptedObj = "";
+            if (!FileExtFuncts.checkHasExtention(encryptedString))
+            {
+                AesEncryption aes = new AesEncryption();
+                aes.Key = keys.Key;
+                aes.Seed = keys.Seed;
+                decryptedObj = aes.Decrypt(encryptedString);
+            }
+            else
+            {
+                Decrypt(encryptedString, encryptedString, keys);
+            }
+            return decryptedObj;
+        }
+        /// <summary>
+        /// function  decrypts the given file
         /// </summary>
         /// <param name="readLocation"> file to read</param>
         /// <param name="saveLocation">file to write to</param>
         /// <param name="keys">the holder of decryption key and seed</param>
-        public void Decrypt(string readLocation,string saveLocation,KeyHolder keys)
+        public void Decrypt(string readLocation, string saveLocation, KeyHolder keys)
         {
             AesEncryption aes = new AesEncryption();
             aes.Key = keys.Key;
             aes.Seed = keys.Seed;
-            aes.Decrypt(readLocation, saveLocation);
+            using (FileStream inputStream = File.Open(readLocation, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                using (FileStream outputStream = File.Open(saveLocation, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    aes.Decrypt(inputStream, outputStream);
+                }
+            }
         }
-        public bool compareFile(string fileName,string SecondFileName)
+        #endregion
+
+        #region File Compare Functions
+        /// <summary>
+        /// function compares two files to check whether they are the same
+        /// <para>Returns true if the files are the same</para>
+        /// </summary>
+        /// <param name="fileOne">First file to check</param>
+        /// <param name="compareFile">File to compare with</param>
+        /// <returns>returns true if the </returns>
+        public bool compareFile(string fileOne, string compareFile)
         {
             bool areEqual = false;
-            if (FileExtFuncts.checkExtention(fileName,SecondFileName))
+            if (FileExtFuncts.checkExtention(fileOne, compareFile))
             {
-                using(FileStream fStrmOne = new FileStream(fileName,FileMode.Open,FileAccess.Read))
+                var fileOneBytes = readFile(fileOne);
+                var fileTwoBytes = readFile(compareFile);
+                if (fileOneBytes.Length == fileTwoBytes.Length)
                 {
-                    using (FileStream fStrmTwo = new FileStream(SecondFileName,FileMode.Open,FileAccess.Read))
+                    int pos = 0;
+                    if (fileOneBytes.Length == fileTwoBytes.Length)
                     {
-                        using (BinaryReader binReaderOne = new BinaryReader(fStrmOne))
+                        bool equal = true;
+                        while (pos < fileOneBytes.Length && fileTwoBytes[pos] == fileTwoBytes[pos] && equal == true)
                         {
-                            using (BinaryReader binReaderTwo = new BinaryReader(fStrmTwo))
-                            {
-                                int fileLenOne = Convert.ToInt32(binReaderOne.BaseStream.Length);
-                                int fileLenTwo = Convert.ToInt32(binReaderTwo.BaseStream.Length);
-
-                                if (fileLenOne == fileLenTwo)
-                                {
-                                    int pos = 0;
-                                    byte[] fileOneBytes = binReaderOne.ReadBytes(fileLenOne);
-                                    byte[] fileTwoBytes = binReaderTwo.ReadBytes(fileLenTwo);
-                                    if (fileOneBytes.Length == fileTwoBytes.Length)
-                                    {
-                                        bool equal = true;
-                                        while (pos < fileOneBytes.Length && fileTwoBytes[pos] == fileTwoBytes[pos] && equal == true)
-                                        {
-                                            equal = checkBits(fileOneBytes[pos], fileTwoBytes[pos]);
-                                            pos++;
-                                        }
-                                        if (pos == fileOneBytes.Length && pos == fileTwoBytes.Length)
-                                        {
-                                            areEqual = true;
-                                        }
-                                    }
-                                }
-                            }
+                            equal = checkBits(fileOneBytes[pos], fileTwoBytes[pos]);
+                            pos++;
+                        }
+                        if (pos == fileOneBytes.Length && pos == fileTwoBytes.Length)
+                        {
+                            areEqual = true;
                         }
                     }
                 }
             }
             return areEqual;
         }
-
-        private bool checkBits(byte byteOne, byte byteTwo)
+        /// <summary>
+        /// function checks whether all of the bits in a byte are the same 
+        /// <para>Returns true all the bits are the same</para>
+        /// </summary>
+        /// <param name="byteOne">first byte to compare</param>
+        /// <param name="compareByte"> second byte to compare with</param>
+        /// <returns></returns>
+        private bool checkBits(byte byteOne, byte compareByte)
         {
-            bool equal = false;
+            bool areEqual = false;
             int pos = 0;
-            string one = "";
-            string two = "";
+            string byteOneBits = "";
+            string byteTwoBits = "";
             int temp = 0;
             while (pos < 8)
             {
                 temp = (byteOne >> pos) & 0x1;
-                one += temp == 1 ? temp.ToString() : "0";
-                temp = (byteTwo >> pos) & 0x1;
-                two += temp == 1 ? temp.ToString() : "0";
+                byteOneBits += temp == 1 ? temp.ToString() : "0";
+                temp = (compareByte >> pos) & 0x1;
+                byteTwoBits += temp == 1 ? temp.ToString() : "0";
                 pos++;
             }
-            if (one == two)
+            if (byteOneBits == byteTwoBits)
             {
-                equal = true;
+                areEqual = true;
             }
 
-            return equal;
-        }
-
-        /// <summary>
-        /// reads in a given file
-        /// <para>returns data inside the file</para>
-        /// </summary>
-        /// <param name="path">name of the file</param>
-        /// <param name="len"> read file length</param>
-        /// <returns>data of the file in the form of  string</returns>
-        private string readFile(string path,ref int len)
-        {
-            string data = "";
-            using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                using (StreamReader strmReader = new StreamReader(fileStrm))
-                {
-                    data = strmReader.ReadToEnd();
-                    len = data.Length;
-                }
-            }
-            return data;
+            return areEqual;
         }
         /// <summary>
         /// reads in a given file
-        /// <para>returns data inside the file</para>
+        /// <para>returns data inside the file as a byte array</para>
         /// </summary>
         /// <param name="path">name of the file</param>
-        /// <param name="len"> read file length</param>
-        /// <returns>data of the file in the form of  string</returns>
-        private byte[] readFile(string path, ref int len, int a = 0)
+        /// <returns>data of the file in the form of a byte array</returns>
+        private byte[] readFile(string path)
         {
             byte[] fileBytes = null;
             using (FileStream fStrm = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
+                int len = 0;
                 using (BinaryReader binReader = new BinaryReader(fStrm))
                 {
                     len = Convert.ToInt32(binReader.BaseStream.Length);
@@ -491,25 +478,6 @@ namespace Networking_Encryption
             }
             return fileBytes;
         }
-        /// <summary>
-        /// function writes given data to the given file
-        /// </summary>
-        /// <param name="data">data to write</param>
-        /// <param name="path">file to write to</param>
-        /// <param name="len"> length of the original file</param>
-        private void writeFile(byte[] data, string path,int len)
-        {
-            using (FileStream fileStrm = new FileStream(path, FileMode.Open, FileAccess.Write))
-            {
-                using (StreamWriter strmWrtr = new StreamWriter(fileStrm))
-                {
-                    if (data.Length == len)
-                    {
-
-                    }
-                    strmWrtr.Write(data);
-                }
-            }
-        }
+        #endregion
     }
 }
