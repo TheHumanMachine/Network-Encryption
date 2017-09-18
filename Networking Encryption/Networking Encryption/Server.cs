@@ -25,6 +25,8 @@ namespace Networking_Encryption
     {
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
+        private static List<Socket> connectedClients = new List<Socket>(); 
+
         public Server()
         {
 
@@ -51,10 +53,12 @@ namespace Networking_Encryption
 
                 while (true)
                 {
+                    Console.WriteLine("# of connected clients {0}", connectedClients.Count());
                     allDone.Reset();
 
                     Console.WriteLine("Waiting for a connection...");
                     listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+
 
                     allDone.WaitOne();
                 }
@@ -73,6 +77,9 @@ namespace Networking_Encryption
 
             Socket listener = (Socket) ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
+
+            Console.WriteLine("A client has connected to the server...");
+            connectedClients.Add(handler);
 
             StateObject state = new StateObject();
             state.workSocket = handler;
@@ -93,9 +100,10 @@ namespace Networking_Encryption
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
                 content = state.sb.ToString();
+                
                 if (content.IndexOf("<EOF>") > -1)
                 {
-                    Console.WriteLine("Read {0} bytes from socket. \nData: {1}", content.Length, content);
+                    Console.WriteLine("\nRead {0} bytes from socket. \nData: {1}", content.Length, content);
                     Send(handler, content);
                 }
             }
@@ -112,7 +120,6 @@ namespace Networking_Encryption
             byte[] byteData = Encoding.ASCII.GetBytes(data);
 
             handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
-
         }
 
         private static void SendCallback(IAsyncResult ar)
@@ -126,8 +133,8 @@ namespace Networking_Encryption
 
 
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+               // handler.Shutdown(SocketShutdown.Both);
+                //handler.Close();
             }
             catch (Exception e)
             {

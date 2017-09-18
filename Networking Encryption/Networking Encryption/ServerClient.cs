@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 
@@ -80,6 +83,16 @@ namespace Networking_Encryption
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        private static void Serialize(NetworkStream stream, String fileName)
+        {
+            Stream fstream = new FileStream(fileName, FileMode.Open);
+
+            IFormatter formatter = new BinaryFormatter();
+
+
+
         }
 
         #region Send/Receive Functions
